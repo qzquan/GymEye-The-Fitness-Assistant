@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- CameraX 预览层 -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true" />
+
+    <!-- 半透明顶部标题栏 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="top"
+        android:background="#66000000"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="扫一扫"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 扫描框区域（中心透明 + 四角指示） -->
+    <FrameLayout
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_gravity="center"
+        android:background="#1AFFFFFF">
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="start|top"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="36dp"
+            android:layout_gravity="start|top"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="end|top"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end|top"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="start|bottom"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="36dp"
+            android:layout_gravity="start|bottom"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="end|bottom"
+            android:background="#FF00E676" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end|bottom"
+            android:background="#FF00E676" />
+    </FrameLayout>
+
+    <!-- 扫描框说明文字 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="460dp"
+        android:text="请将目标放入扫描框内"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp" />
+
+    <!-- 底部“开始分析”按钮 -->
+    <Button
+        android:id="@+id/btnAnalyze"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="28dp"
+        android:backgroundTint="#FF1E88E5"
+        android:text="开始分析"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFFFF"
+        android:textSize="16sp" />
+
+</FrameLayout>
