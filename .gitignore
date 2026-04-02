@@ -1,0 +1,55 @@
+# ==========================================
+# 📱 1. 安卓端 (Android-App) 专属忽略
+# ==========================================
+android_project/build/
+android_project/app/build/
+android_project/.gradle/
+android_project/.idea/
+# 绝对不能上传本地环境配置！
+android_project/local.properties
+android_project/*.iml
+# 忽略打包好的安装包
+android_project/**/*.apk
+android_project/**/*.aab
+
+# ==========================================
+# 🧠 2. AI 算法端 (YOLO/Python) 专属忽略
+# ==========================================
+# 忽略 Python 缓存
+ai/__pycache__/
+ai/**/*.pyc
+ai/.ipynb_checkpoints/
+ai/venv/
+ai/env/
+# ⚠️ 绝对不能上传几百兆的原始照片数据集！
+ai/datasets/
+ai/data/
+# ⚠️ 绝对不能上传 YOLO 训练产生的超大过程权重文件 (只传导出的 .tflite 给安卓即可)
+ai/**/*.pt
+ai/**/*.pth
+ai/runs/
+
+# ==========================================
+# ⚙️ 3. 后端 (Backend) 专属忽略
+# ==========================================
+# Java 编译输出 (如果后端用 Java)
+backend/target/
+backend/**/*.class
+# Node.js 依赖 (如果后端用 Node)
+backend/node_modules/
+# Python 环境配置 (如果后端用 Python)
+backend/venv/
+backend/__pycache__/
+# ⚠️ 绝对不能上传密码和环境变量！
+backend/.env
+# 忽略日志和本地数据库
+backend/**/*.log
+backend/**/*.sqlite3
+
+# ==========================================
+# 💻 4. 操作系统与通用垃圾文件
+# ==========================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
