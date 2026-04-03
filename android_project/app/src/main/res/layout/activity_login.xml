@@ -160,10 +160,24 @@
         app:layout_constraintTop_toBottomOf="@id/btnLoginQQ" />
 
     <TextView
+        android:id="@+id/btnGuestLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:padding="8dp"
+        android:text="游客登录"
+        android:textColor="#FF5F5F5F"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLoginWechat" />
+
+    <TextView
         android:id="@+id/tvTerms"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="18dp"
         android:gravity="center"
         android:lineSpacingExtra="2dp"
         android:text="By clicking continue, you agree to our Terms of Service&#10;and Privacy Policy"
@@ -171,6 +185,6 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLoginWechat" />
+        app:layout_constraintTop_toBottomOf="@id/btnGuestLogin" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
