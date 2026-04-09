@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  nickname VARCHAR(100) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS equipment (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  description TEXT NULL,
+  target_muscle VARCHAR(255) NULL,
+  tutorial_text TEXT NULL,
+  tutorial_url VARCHAR(1024) NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS history (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL,
+  equipment_id INT UNSIGNED NOT NULL,
+  scanned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_history_user (user_id),
+  INDEX idx_history_equipment (equipment_id),
+  CONSTRAINT fk_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_history_equipment FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
