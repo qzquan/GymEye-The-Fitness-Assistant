@@ -73,6 +73,33 @@
             android:textSize="16sp" />
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardPassword"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#FFFFFFFF"
+        app:cardCornerRadius="12dp"
+        app:strokeColor="#FFDDDDDD"
+        app:strokeWidth="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardEmail">
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:hint="password"
+            android:inputType="textPassword"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="#FF222222"
+            android:textColorHint="#FF9E9E9E"
+            android:textSize="16sp" />
+    </com.google.android.material.card.MaterialCardView>
+
     <Button
         android:id="@+id/btnContinue"
         android:layout_width="0dp"
@@ -86,7 +113,7 @@
         app:cornerRadius="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardEmail" />
+        app:layout_constraintTop_toBottomOf="@id/cardPassword" />
 
     <View
         android:id="@+id/viewLeftLine"
