@@ -2,7 +2,9 @@ package com.example.strong_body;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -11,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -20,114 +23,113 @@ import androidx.core.view.WindowCompat;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScanActivity extends AppCompatActivity {
 
-    // 相机权限常量，统一管理，避免硬编码
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
-
-    // 预览控件：承接 CameraX 输出画面
     private PreviewView viewFinder;
-
-    // 动态权限请求启动器
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private Button btnAnalyze;
+
+    // 👇 引入我们刚刚植入的大脑
+    private YOLOv8Detector yoloDetector;
+    // 专门用来跑图像分析的后台线程，防止卡顿手机画面
+    private ExecutorService cameraExecutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 扫描页使用沉浸式内容区域，让预览真正铺满全屏
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_scan);
 
-        // 隐藏 ActionBar，避免顶部预留空间影响扫码页视觉
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         viewFinder = findViewById(R.id.viewFinder);
-        Button btnAnalyze = findViewById(R.id.btnAnalyze);
+        btnAnalyze = findViewById(R.id.btnAnalyze);
+        cameraExecutor = Executors.newSingleThreadExecutor();
 
-        // “开始分析”占位逻辑：后续可在这里接入识别/上传/解析流程
-        btnAnalyze.setOnClickListener(v ->
-                Toast.makeText(this, "开始分析（功能待接入）", Toast.LENGTH_SHORT).show()
-        );
+        // 👇 初始化我们的大脑（注意这俩名字必须和 assets 里的文件一模一样！）
+        yoloDetector = new YOLOv8Detector(this, "best_float32.tflite", "labels.txt");
 
-        // 初始化权限回调：授权后启动相机，拒绝则提示用户
-        requestPermissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                        isGranted -> {
-                            if (isGranted) {
-                                startCamera();
-                            } else {
-                                Toast.makeText(
-                                        this,
-                                        "相机权限被拒绝，无法开启扫码预览",
-                                        Toast.LENGTH_LONG
-                                ).show();
-                            }
-                        });
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) startCamera();
+                    else Toast.makeText(this, "相机权限被拒绝", Toast.LENGTH_LONG).show();
+                });
 
-        // 先检查权限，已授权则直接初始化预览
-        if (hasCameraPermission()) {
-            startCamera();
-        } else {
-            requestPermissionLauncher.launch(CAMERA_PERMISSION);
-        }
+        if (hasCameraPermission()) startCamera();
+        else requestPermissionLauncher.launch(CAMERA_PERMISSION);
     }
 
-    /**
-     * 检查是否已经授予相机权限。
-     */
     private boolean hasCameraPermission() {
-        return ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION)
-                == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    /**
-     * 初始化 CameraX：选择后置摄像头并绑定预览到当前页面生命周期。
-     */
     private void startCamera() {
-        ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-                ProcessCameraProvider.getInstance(this);
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
 
-                // 预览用例：将图像流渲染到 PreviewView
+                // 1. 预览功能（给用户看）
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
 
-                // 指定使用后置摄像头
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                // 2. 👇 核心增加：图像分析功能（给模型看）
+                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                        // 强制输出 RGBA 格式，方便转 Bitmap
+                        .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                        // 如果处理不过来，丢弃旧画面，只看最新的一帧
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build();
 
-                // 每次绑定前先解绑，避免重复绑定报错
+                // 开始疯狂截取画面
+                imageAnalysis.setAnalyzer(cameraExecutor, imageProxy -> {
+                    // 把摄像头的帧转成 Bitmap
+                    Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
+                    bitmap.copyPixelsFromBuffer(imageProxy.getPlanes()[0].getBuffer());
+
+                    // 根据手机姿态旋转图片，保证模型看到的是正立的器械
+                    int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
+                    Bitmap rotatedBitmap = rotateBitmap(bitmap, rotationDegrees);
+
+                    // 🧠 喂给模型！获取识别结果
+                    String result = yoloDetector.detect(rotatedBitmap);
+
+                    // 在主线程更新 UI：把结果显示在那个按钮上
+                    runOnUiThread(() -> btnAnalyze.setText(result));
+
+                    // 必须关掉这一帧，才能接收下一帧
+                    imageProxy.close();
+                });
+
+                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
                 cameraProvider.unbindAll();
 
-                // 与 Activity 生命周期绑定：界面可见时自动打开，不可见时自动释放
-                cameraProvider.bindToLifecycle(
-                        this,
-                        cameraSelector,
-                        preview
-                );
-            } catch (ExecutionException | InterruptedException e) {
-                Toast.makeText(
-                        this,
-                        "相机初始化失败：" + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show();
-                // 中断异常需恢复中断状态，避免吞掉中断信号
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
-            } catch (@NonNull IllegalArgumentException e) {
-                Toast.makeText(
-                        this,
-                        "后置摄像头不可用：" + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show();
+                // 👇 把 preview 和 imageAnalysis 一起绑上去！
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
+
+            } catch (Exception e) {
+                Log.e("ScanActivity", "相机启动失败", e);
             }
         }, ContextCompat.getMainExecutor(this));
+    }
+
+    // 旋转图片的辅助方法
+    private Bitmap rotateBitmap(Bitmap source, int angle) {
+        if (angle == 0) return source;
+        android.graphics.Matrix matrix = new android.graphics.Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cameraExecutor.shutdown(); // 退出时关掉后台线程
     }
 }
