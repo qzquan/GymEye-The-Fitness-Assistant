@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <!-- WeChat Logo - Green circle with chat bubble -->
+    <path
+        android:fillColor="#07C160"
+        android:pathData="M512,64C264.6,64 64,204.6 64,392c0,74.3 32.5,141.1 84.7,190.8l-41,126.3c-2.6,8 0.7,17.2 7.5,21.3 6.8,4.1 15.9,2.2 20.2,-4.3l51.1,-75.7c80.4,37.6 175.5,29.3 247.4,-22.3C729,776.5 858.5,650.9 858.5,488c0,-187.4 -200.6,-424 -346.5,-424z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M512,203c-35.3,0 -64,28.7 -64,64s28.7,64 64,64 64,-28.7 64,-64 -28.7,-64 -64,-64z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M410,320c-22.1,0 -40,17.9 -40,40s17.9,40 40,40 40,-17.9 40,-40 -17.9,-40 -40,-40z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M614,320c-22.1,0 -40,17.9 -40,40s17.9,40 40,40 40,-17.9 40,-40 -17.9,-40 -40,-40z"/>
+</vector>
