@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Strong_body</string>
+    <string name="terms_text">By clicking continue, you agree to our <a href="https://example.com/terms"><b>Terms of Service</b></a> and <a href="https://example.com/privacy"><b>Privacy Policy</b></a></string>
 </resources>
