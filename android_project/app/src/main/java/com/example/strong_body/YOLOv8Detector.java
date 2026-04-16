@@ -22,7 +22,7 @@ public class YOLOv8Detector {
     private List<String> labels;
 
     private static final int INPUT_SIZE = 640;
-    private static final int NUM_CLASSES = 4;
+    private static final int NUM_CLASSES = 3;
     private static final int NUM_ELEMENTS = 4 + NUM_CLASSES;
     private static final int NUM_BOXES = 8400;
 
