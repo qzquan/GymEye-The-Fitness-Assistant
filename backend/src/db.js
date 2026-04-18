@@ -11,5 +11,13 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-export default pool;
+export async function pingDatabase() {
+  const conn = await pool.getConnection();
+  try {
+    await conn.ping();
+  } finally {
+    conn.release();
+  }
+}
 
+export default pool;
