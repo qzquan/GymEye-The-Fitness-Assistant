@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,7 +25,7 @@
             android:contentDescription="返回"
             android:padding="12dp"
             android:src="@android:drawable/ic_menu_revert"
-            android:tint="#FFFFFFFF" />
+            app:tint="#FFFFFFFF" />
 
         <TextView
             android:id="@+id/tvEquipmentName"
@@ -92,7 +93,7 @@
                     android:contentDescription="重新播放"
                     android:padding="12dp"
                     android:src="@android:drawable/ic_menu_rotate"
-                    android:tint="#FFFFFFFF" />
+                    app:tint="#FFFFFFFF" />
             </FrameLayout>
 
             <!-- 肌肉发力图标题 -->
