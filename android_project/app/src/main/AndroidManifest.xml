@@ -25,6 +25,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".SignInActivity"
+            android:exported="false" />
+        <activity
             android:name=".ScanActivity"
             android:exported="false" />
         <activity

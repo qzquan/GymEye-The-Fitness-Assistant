@@ -17,4 +17,15 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">false</item>
     </style>
+
+    <!-- 引用 @font/font_family（Roboto 600，需 GMS 下载）；无 GMS 时用 SemiboldSystem -->
+    <style name="TextAppearance.GymEye.Semibold" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/font_family</item>
+        <item name="android:fontFamily">@font/font_family</item>
+    </style>
+
+    <style name="TextAppearance.GymEye.SemiboldSystem" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
 </resources>

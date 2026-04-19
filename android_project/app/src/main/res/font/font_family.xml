@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Semibold 观感：通过 Google Play 服务下载 Roboto 字重 600。
+  用法：android:fontFamily="@font/font_family"
+       或 style="@style/TextAppearance.GymEye.Semibold"
+  无 GMS/离线失败时，可用 @style/TextAppearance.GymEye.SemiboldSystem 回退（sans-serif-medium）。
+-->
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:fontProviderAuthority="com.google.android.gms.fonts"
+    app:fontProviderPackage="com.google.android.gms"
+    app:fontProviderQuery="name=Roboto&amp;weight=600&amp;besteffort=true"
+    app:fontProviderCerts="@array/com_google_android_gms_fonts_certs" />
