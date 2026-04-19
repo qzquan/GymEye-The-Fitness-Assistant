@@ -55,7 +55,6 @@
             android:layout_width="match_parent"
             android:layout_height="48dp" />
 
-        <!-- username -->
         <TextView
             android:id="@+id/tvCreateAccount"
             android:layout_width="match_parent"
@@ -67,6 +66,7 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
+        <!-- username -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
                 android:layout_height="42dp"
                 android:background="@drawable/bg_pill_label"
                 android:gravity="center"
-                android:text="确认密码"
+                android:text="确认"
                 android:textAllCaps="false" />
 
             <EditText
@@ -241,13 +241,12 @@
         </LinearLayout>
 
         <!-- or 下方：进入仅密码登录页 -->
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogIn"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="20dp"
-            android:text="直接登录"
+            android:text="登录"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="17sp"
@@ -300,7 +299,7 @@
             android:focusable="true"
             android:gravity="center"
             android:padding="8dp"
-            android:text="游客登陆"
+            android:text="游客登录"
             android:textColor="@color/login_teal_link"
             android:textSize="16sp"
             android:textStyle="normal" />
