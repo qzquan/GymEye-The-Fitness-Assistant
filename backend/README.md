@@ -7,6 +7,18 @@
 
 The backend now uses a local JSON data file at `backend/data/db.json` by default. On first start it auto-creates the file and imports equipment names from the Android label asset.
 
+## Android development startup
+
+The Android debug build starts the local backend automatically. Android Studio Run, `gradlew installDebug`, and `gradlew assembleDebug` trigger `:app:ensureBackendRunning`, which starts `node backend/src/index.js` when port `8080` is not already listening.
+
+To skip this behavior for a build:
+
+```powershell
+.\gradlew.bat assembleDebug -PskipBackendAutostart=true
+```
+
+From the repo root, `run-dev.cmd` starts the backend, installs the debug app, and launches it on the connected emulator/device.
+
 ## Available scripts
 
 - `npm start`: start the backend on `PORT`
