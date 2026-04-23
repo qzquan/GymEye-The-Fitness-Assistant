@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dataDir = path.resolve(__dirname, '../data');
 const dataPath = path.join(dataDir, 'db.json');
+const tempDataPath = path.join(dataDir, 'db.json.tmp');
 const labelCandidates = [
   path.resolve(__dirname, '../../android_project/app/src/main/assets/labels.txt'),
   path.resolve(__dirname, '../../android_project/app/src/main/assets/label.txt')
@@ -23,6 +24,7 @@ const defaultState = {
 };
 
 let readyPromise = null;
+let mutationQueue = Promise.resolve();
 
 async function ensureReady() {
   if (!readyPromise) {
@@ -33,14 +35,26 @@ async function ensureReady() {
 
 async function initialize() {
   await fs.mkdir(dataDir, { recursive: true });
+  let dataFileExists = true;
   try {
     await fs.access(dataPath);
   } catch {
-    const initialState = structuredClone(defaultState);
-    initialState.equipment = await loadLabelEquipment();
-    initialState.counters.equipment = initialState.equipment.length;
-    await writeState(initialState);
+    dataFileExists = false;
   }
+
+  if (dataFileExists) {
+    const state = await readStateFile();
+    const normalized = await normalizeState(state);
+    if (normalized.changed) {
+      await writeState(normalized.state);
+    }
+    return;
+  }
+
+  const initialState = structuredClone(defaultState);
+  initialState.equipment = await loadLabelEquipment();
+  initialState.counters.equipment = initialState.equipment.length;
+  await writeState(initialState);
 }
 
 async function loadLabelEquipment() {
@@ -65,14 +79,82 @@ async function loadLabelEquipment() {
   return [];
 }
 
-async function readState() {
-  await ensureReady();
+function maxId(rows) {
+  return rows.reduce((max, row) => (Number.isInteger(row.id) && row.id > max ? row.id : max), 0);
+}
+
+async function normalizeState(state) {
+  let changed = false;
+  const normalized = {
+    ...structuredClone(defaultState),
+    ...state,
+    counters: {
+      ...structuredClone(defaultState.counters),
+      ...(state?.counters || {})
+    }
+  };
+
+  for (const key of ['users', 'equipment', 'history']) {
+    if (!Array.isArray(normalized[key])) {
+      normalized[key] = [];
+      changed = true;
+    }
+  }
+
+  const counterTargets = {
+    users: maxId(normalized.users),
+    equipment: maxId(normalized.equipment),
+    history: maxId(normalized.history)
+  };
+  for (const [key, value] of Object.entries(counterTargets)) {
+    if (!Number.isInteger(normalized.counters[key]) || normalized.counters[key] < value) {
+      normalized.counters[key] = value;
+      changed = true;
+    }
+  }
+
+  const existingNames = new Set(normalized.equipment.map(item => item.name));
+  const labels = await loadLabelEquipment();
+  for (const labelEquipment of labels) {
+    if (!existingNames.has(labelEquipment.name)) {
+      const id = nextId(normalized, 'equipment');
+      normalized.equipment.push({
+        ...labelEquipment,
+        id
+      });
+      existingNames.add(labelEquipment.name);
+      changed = true;
+    }
+  }
+
+  return { state: normalized, changed };
+}
+
+async function readStateFile() {
   const content = await fs.readFile(dataPath, 'utf-8');
   return JSON.parse(content);
 }
 
+async function readState() {
+  await ensureReady();
+  return readStateFile();
+}
+
 async function writeState(state) {
-  await fs.writeFile(dataPath, JSON.stringify(state, null, 2), 'utf-8');
+  await fs.writeFile(tempDataPath, JSON.stringify(state, null, 2), 'utf-8');
+  await fs.rename(tempDataPath, dataPath);
+}
+
+async function withStateMutation(mutator) {
+  const run = mutationQueue.then(async () => {
+    await ensureReady();
+    const state = await readStateFile();
+    const result = await mutator(state);
+    await writeState(state);
+    return result;
+  });
+  mutationQueue = run.catch(() => {});
+  return run;
 }
 
 function clone(value) {
@@ -132,46 +214,43 @@ export async function getEquipmentByName(name) {
 }
 
 export async function createEquipment(payload) {
-  const state = await readState();
-  const id = nextId(state, 'equipment');
-  const record = {
-    id,
-    name: payload.name,
-    description: payload.description ?? null,
-    target_muscle: payload.target_muscle ?? null,
-    tutorial_text: payload.tutorial_text ?? null,
-    tutorial_url: payload.tutorial_url ?? null,
-    created_at: new Date().toISOString()
-  };
-  state.equipment.push(record);
-  await writeState(state);
-  return clone(record);
+  return withStateMutation(state => {
+    const id = nextId(state, 'equipment');
+    const record = {
+      id,
+      name: payload.name,
+      description: payload.description ?? null,
+      target_muscle: payload.target_muscle ?? null,
+      tutorial_text: payload.tutorial_text ?? null,
+      tutorial_url: payload.tutorial_url ?? null,
+      created_at: new Date().toISOString()
+    };
+    state.equipment.push(record);
+    return clone(record);
+  });
 }
 
 export async function updateEquipment(id, payload) {
-  const state = await readState();
-  const index = state.equipment.findIndex(item => item.id === id);
-  if (index < 0) {
-    return null;
-  }
-  state.equipment[index] = {
-    ...state.equipment[index],
-    ...payload
-  };
-  await writeState(state);
-  return clone(state.equipment[index]);
+  return withStateMutation(state => {
+    const index = state.equipment.findIndex(item => item.id === id);
+    if (index < 0) {
+      return null;
+    }
+    state.equipment[index] = {
+      ...state.equipment[index],
+      ...payload
+    };
+    return clone(state.equipment[index]);
+  });
 }
 
 export async function deleteEquipment(id) {
-  const state = await readState();
-  const before = state.equipment.length;
-  state.equipment = state.equipment.filter(item => item.id !== id);
-  state.history = state.history.filter(item => item.equipment_id !== id);
-  const deleted = state.equipment.length !== before;
-  if (deleted) {
-    await writeState(state);
-  }
-  return deleted;
+  return withStateMutation(state => {
+    const before = state.equipment.length;
+    state.equipment = state.equipment.filter(item => item.id !== id);
+    state.history = state.history.filter(item => item.equipment_id !== id);
+    return state.equipment.length !== before;
+  });
 }
 
 export async function findUserByEmail(email) {
@@ -185,46 +264,46 @@ export async function findUserById(id) {
 }
 
 export async function createUser({ email, password_hash, nickname }) {
-  const state = await readState();
-  const id = nextId(state, 'users');
-  const record = {
-    id,
-    email,
-    password_hash,
-    nickname: nickname ?? null,
-    created_at: new Date().toISOString()
-  };
-  state.users.push(record);
-  await writeState(state);
-  return clone(record);
+  return withStateMutation(state => {
+    const id = nextId(state, 'users');
+    const record = {
+      id,
+      email,
+      password_hash,
+      nickname: nickname ?? null,
+      created_at: new Date().toISOString()
+    };
+    state.users.push(record);
+    return clone(record);
+  });
 }
 
 export async function updateUser(id, payload) {
-  const state = await readState();
-  const index = state.users.findIndex(user => user.id === id);
-  if (index < 0) {
-    return null;
-  }
-  state.users[index] = {
-    ...state.users[index],
-    ...payload
-  };
-  await writeState(state);
-  return clone(state.users[index]);
+  return withStateMutation(state => {
+    const index = state.users.findIndex(user => user.id === id);
+    if (index < 0) {
+      return null;
+    }
+    state.users[index] = {
+      ...state.users[index],
+      ...payload
+    };
+    return clone(state.users[index]);
+  });
 }
 
 export async function createHistory({ user_id, equipment_id, scanned_at }) {
-  const state = await readState();
-  const id = nextId(state, 'history');
-  const record = {
-    id,
-    user_id,
-    equipment_id,
-    scanned_at: scanned_at instanceof Date ? scanned_at.toISOString() : scanned_at
-  };
-  state.history.push(record);
-  await writeState(state);
-  return clone(record);
+  return withStateMutation(state => {
+    const id = nextId(state, 'history');
+    const record = {
+      id,
+      user_id,
+      equipment_id,
+      scanned_at: scanned_at instanceof Date ? scanned_at.toISOString() : scanned_at
+    };
+    state.history.push(record);
+    return clone(record);
+  });
 }
 
 export async function listHistory({ userId, limit, offset }) {
@@ -256,17 +335,17 @@ export async function listHistoryAll(userId) {
 }
 
 export async function deleteHistory(id, userId) {
-  const state = await readState();
-  const target = state.history.find(item => item.id === id);
-  if (!target) {
-    return { found: false, deleted: false };
-  }
-  if (target.user_id !== userId) {
-    return { found: true, deleted: false };
-  }
-  state.history = state.history.filter(item => item.id !== id);
-  await writeState(state);
-  return { found: true, deleted: true };
+  return withStateMutation(state => {
+    const target = state.history.find(item => item.id === id);
+    if (!target) {
+      return { found: false, deleted: false };
+    }
+    if (target.user_id !== userId) {
+      return { found: true, deleted: false };
+    }
+    state.history = state.history.filter(item => item.id !== id);
+    return { found: true, deleted: true };
+  });
 }
 
 export async function getHistoryStats(userId) {

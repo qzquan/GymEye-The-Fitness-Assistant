@@ -8,7 +8,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function main() {
-  const labelsPath = path.resolve(__dirname, '../../../android_project/app/src/main/assets/label.txt');
+  const labelCandidates = [
+    path.resolve(__dirname, '../../../android_project/app/src/main/assets/labels.txt'),
+    path.resolve(__dirname, '../../../android_project/app/src/main/assets/label.txt')
+  ];
+  const labelsPath = labelCandidates.find(candidate => fs.existsSync(candidate));
+  if (!labelsPath) {
+    throw new Error(`No labels file found. Checked: ${labelCandidates.join(', ')}`);
+  }
   const content = fs.readFileSync(labelsPath, 'utf-8');
   const lines = content.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
   for (const name of lines) {
@@ -20,4 +27,3 @@ async function main() {
 }
 
 main();
-

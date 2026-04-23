@@ -4,6 +4,7 @@
 android_project/build/
 android_project/app/build/
 android_project/.gradle/
+android_project/.gradle-home/
 android_project/.idea/
 # 绝对不能上传本地环境配置！
 android_project/local.properties
@@ -46,6 +47,7 @@ backend/.env
 # 忽略日志和本地数据库
 backend/**/*.log
 backend/**/*.sqlite3
+backend/data/
 
 # ==========================================
 # 💻 4. 操作系统与通用垃圾文件

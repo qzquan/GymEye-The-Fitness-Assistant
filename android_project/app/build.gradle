@@ -48,3 +48,70 @@ dependencies {
     androidTestImplementation libs.espresso.core
     implementation 'org.tensorflow:tensorflow-lite:2.16.1'
 }
+
+def backendPort = 8080
+def backendDir = rootProject.file("../backend")
+def backendStdout = new File(backendDir, "backend.autostart.stdout.log")
+def backendStderr = new File(backendDir, "backend.autostart.stderr.log")
+
+def isPortOpen = { int port ->
+    try {
+        new Socket("127.0.0.1", port).withCloseable {}
+        return true
+    } catch (ignored) {
+        return false
+    }
+}
+
+tasks.register("ensureBackendRunning") {
+    group = "gymeye"
+    description = "Starts the local GymEye backend when running the Android debug app."
+
+    onlyIf {
+        !project.hasProperty("skipBackendAutostart") &&
+                System.getenv("CI") == null &&
+                gradle.startParameter.taskNames.any { taskName ->
+                    def name = taskName.toLowerCase(Locale.ROOT)
+                    name.contains("debug") || name.contains("install")
+                }
+    }
+
+    doLast {
+        if (isPortOpen(backendPort)) {
+            logger.lifecycle("GymEye backend is already listening on port ${backendPort}.")
+            return
+        }
+
+        if (!new File(backendDir, "src/index.js").exists()) {
+            throw new GradleException("GymEye backend entry not found: ${backendDir}")
+        }
+
+        backendStdout.parentFile.mkdirs()
+        logger.lifecycle("Starting GymEye backend on port ${backendPort}...")
+        def process = new ProcessBuilder("node", "src/index.js")
+                .directory(backendDir)
+                .redirectOutput(ProcessBuilder.Redirect.appendTo(backendStdout))
+                .redirectError(ProcessBuilder.Redirect.appendTo(backendStderr))
+                .start()
+
+        def deadline = System.currentTimeMillis() + 10_000
+        while (System.currentTimeMillis() < deadline) {
+            if (isPortOpen(backendPort)) {
+                logger.lifecycle("GymEye backend started. pid=${process.pid()}, log=${backendStdout}")
+                return
+            }
+            if (!process.isAlive()) {
+                throw new GradleException("GymEye backend exited during startup. See ${backendStderr}")
+            }
+            Thread.sleep(500)
+        }
+
+        throw new GradleException("Timed out waiting for GymEye backend on port ${backendPort}. See ${backendStderr}")
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name in ["preDebugBuild", "installDebug"]) {
+        task.dependsOn(tasks.named("ensureBackendRunning"))
+    }
+}
