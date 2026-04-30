@@ -28,9 +28,12 @@
             android:name=".SignInActivity"
             android:exported="false" />
         <activity
+<<<<<<< HEAD
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
+=======
+>>>>>>> origin/main
             android:name=".ScanActivity"
             android:exported="false" />
         <activity

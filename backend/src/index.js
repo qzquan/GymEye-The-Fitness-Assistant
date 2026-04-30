@@ -9,15 +9,15 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { pingStorage } from './store.js';
 
 const app = express();
-app.use(express.json());
 
-// 添加请求日志中间件，方便调试
+app.use(express.json({ limit: '1mb' }));
+
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  console.log('Headers:', JSON.stringify(req.headers));
-  if (req.method === 'POST') {
-    console.log('Body:', JSON.stringify(req.body));
-  }
+  const startedAt = Date.now();
+  res.on('finish', () => {
+    const elapsedMs = Date.now() - startedAt;
+    console.log(`${new Date().toISOString()} ${res.statusCode} ${req.method} ${req.originalUrl} ${elapsedMs}ms`);
+  });
   next();
 });
 
@@ -34,6 +34,14 @@ app.get('/api/health', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    name: 'GymEye backend',
+    health: '/api/health'
+  });
 });
 
 app.use('/api/user', userRouter);

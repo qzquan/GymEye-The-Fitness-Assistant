@@ -30,11 +30,22 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+<<<<<<< HEAD
 /** 首屏登录页：邮箱+密码登录，可选择已保存账号；分割线下方可跳转注册页。 */
+=======
+/**
+ * 注册页：Sign up → /api/user/register。Log In：可选中已保存且开启自动登录的账号后一键进入；否则跳转登录页。
+ */
+>>>>>>> origin/main
 public class LoginActivity extends AppCompatActivity {
 
+    private EditText etUsername;
     private EditText etEmail;
     private EditText etPassword;
+<<<<<<< HEAD
+=======
+    private EditText etConfirm;
+>>>>>>> origin/main
     private MaterialButton btnSignUp;
     private MaterialButton btnLogIn;
     private TextView tvGuest;
@@ -45,17 +56,31 @@ public class LoginActivity extends AppCompatActivity {
     private LinearLayout llSavedAccounts;
 
     private boolean savedAccountsExpanded;
+<<<<<<< HEAD
     private String selectedSavedEmail;
 
     private static final String API_LOGIN = ApiConfig.BASE_URL + "/api/user/login";
+=======
+    /** 当前选中的已保存邮箱；用于 Log In 行为 */
+    private String selectedSavedEmail;
+
+    private static final String API_REGISTER = ApiConfig.BASE_URL + "/api/user/register";
+>>>>>>> origin/main
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+<<<<<<< HEAD
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+=======
+        etUsername = findViewById(R.id.etUsername);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+        etConfirm = findViewById(R.id.etConfirm);
+>>>>>>> origin/main
         btnSignUp = findViewById(R.id.btnSignUp);
         btnLogIn = findViewById(R.id.btnLogIn);
         tvGuest = findViewById(R.id.tvGuest);
@@ -65,12 +90,21 @@ public class LoginActivity extends AppCompatActivity {
         svSavedAccounts = findViewById(R.id.svSavedAccounts);
         llSavedAccounts = findViewById(R.id.llSavedAccounts);
 
+<<<<<<< HEAD
         btnLogIn.setOnClickListener(v -> attemptLogin());
         btnSignUp.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
 
         tvSavedAccountsHeader.setOnClickListener(v -> toggleSavedAccountsExpanded());
 
+=======
+        btnSignUp.setOnClickListener(v -> attemptSignUp());
+
+        btnLogIn.setOnClickListener(v -> onLogInClicked());
+
+        tvSavedAccountsHeader.setOnClickListener(v -> toggleSavedAccountsExpanded());
+
+>>>>>>> origin/main
         tvGuest.setOnClickListener(v -> goToHome("Continue as guest"));
     }
 
@@ -107,9 +141,12 @@ public class LoginActivity extends AppCompatActivity {
                 || AuthAccountStorage.findByEmail(this, selectedSavedEmail) == null) {
             selectedSavedEmail = accounts.get(0).email;
         }
+<<<<<<< HEAD
         if (!TextUtils.isEmpty(selectedSavedEmail)) {
             etEmail.setText(selectedSavedEmail);
         }
+=======
+>>>>>>> origin/main
 
         llSavedAccounts.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -150,10 +187,39 @@ public class LoginActivity extends AppCompatActivity {
         return Character.isLetterOrDigit(c) ? String.valueOf(c) : "?";
     }
 
+<<<<<<< HEAD
     private void attemptLogin() {
         String email = etEmail.getText() == null ? "" : etEmail.getText().toString().trim();
         String password = etPassword.getText() == null ? "" : etPassword.getText().toString();
 
+=======
+    private void onLogInClicked() {
+        if (!TextUtils.isEmpty(selectedSavedEmail)) {
+            SavedAccount acc = AuthAccountStorage.findByEmail(this, selectedSavedEmail);
+            if (acc != null && acc.canQuickLogin()) {
+                AuthAccountStorage.touch(this, acc.email);
+                goToHome("欢迎回来");
+                return;
+            }
+            Intent i = new Intent(this, SignInActivity.class);
+            i.putExtra(SignInActivity.EXTRA_INITIAL_EMAIL, selectedSavedEmail);
+            startActivity(i);
+            return;
+        }
+        startActivity(new Intent(this, SignInActivity.class));
+    }
+
+    private void attemptSignUp() {
+        String nickname = etUsername.getText() == null ? "" : etUsername.getText().toString().trim();
+        String email = etEmail.getText() == null ? "" : etEmail.getText().toString().trim();
+        String password = etPassword.getText() == null ? "" : etPassword.getText().toString();
+        String confirm = etConfirm.getText() == null ? "" : etConfirm.getText().toString();
+
+        if (TextUtils.isEmpty(nickname)) {
+            etUsername.setError("请输入显示名称（将用于主页头像旁）");
+            return;
+        }
+>>>>>>> origin/main
         if (TextUtils.isEmpty(email)) {
             etEmail.setError("请输入邮箱");
             return;
@@ -170,6 +236,7 @@ public class LoginActivity extends AppCompatActivity {
             etPassword.setError("密码至少 6 位");
             return;
         }
+<<<<<<< HEAD
 
         loginTask(email, password);
     }
@@ -178,6 +245,20 @@ public class LoginActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 URL url = new URL(API_LOGIN);
+=======
+        if (!password.equals(confirm)) {
+            etConfirm.setError("两次密码不一致");
+            return;
+        }
+
+        registerTask(email, password, nickname);
+    }
+
+    private void registerTask(String email, String password, String nickname) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(API_REGISTER);
+>>>>>>> origin/main
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
@@ -189,12 +270,20 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject jsonInput = new JSONObject();
                 jsonInput.put("email", email);
                 jsonInput.put("password", password);
+<<<<<<< HEAD
+=======
+                jsonInput.put("nickname", nickname);
+>>>>>>> origin/main
                 String jsonStr = jsonInput.toString();
 
                 byte[] input = jsonStr.getBytes(StandardCharsets.UTF_8);
                 conn.setRequestProperty("Content-Length", String.valueOf(input.length));
 
+<<<<<<< HEAD
                 Log.d("LoginActivity", "POST " + API_LOGIN + " body=" + jsonStr);
+=======
+                Log.d("LoginActivity", "POST register: " + jsonStr);
+>>>>>>> origin/main
 
                 try (OutputStream os = conn.getOutputStream()) {
                     os.write(input, 0, input.length);
@@ -205,14 +294,29 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("LoginActivity", "Response Code: " + code);
 
                 String body = readResponseBody(conn, code);
+<<<<<<< HEAD
                 if (code == 200) {
                     JSONObject res = new JSONObject(body);
                     boolean ok = res.optBoolean("ok", false);
                     if (ok) {
                         new Handler(Looper.getMainLooper()).post(() -> onLoginSuccess(email, res));
+=======
+                if (code == 201 || code == 200) {
+                    JSONObject res = new JSONObject(body);
+                    boolean ok = res.optBoolean("ok", false);
+                    if (ok) {
+                        String token = res.optString("token", "");
+                        JSONObject user = res.optJSONObject("user");
+                        String nick = user != null ? user.optString("nickname", nickname) : nickname;
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            AuthAccountStorage.upsert(LoginActivity.this, email, nick, token, false);
+                            goToHome("注册成功");
+                        });
+>>>>>>> origin/main
                     } else {
-                        showToast("登录失败");
+                        showToast("注册失败");
                     }
+<<<<<<< HEAD
                 } else if (code == 401) {
                     showToast("邮箱或密码错误");
                 } else {
@@ -220,6 +324,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 Log.e("LoginActivity", "Login error url=" + API_LOGIN, e);
+=======
+                } else if (code == 409) {
+                    showToast("该邮箱已注册，请直接登录");
+                } else {
+                    showToast("注册失败: " + code);
+                }
+            } catch (Exception e) {
+                Log.e("LoginActivity", "Register error url=" + API_REGISTER, e);
+>>>>>>> origin/main
                 String detail = e.getMessage() != null ? e.getMessage() : "";
                 showToast("连接失败\n" + ApiConfig.BASE_URL
                         + (detail.isEmpty() ? "" : "\n" + detail));
@@ -227,6 +340,7 @@ public class LoginActivity extends AppCompatActivity {
         }).start();
     }
 
+<<<<<<< HEAD
     private void onLoginSuccess(String email, JSONObject res) {
         String token = res.optString("token", "");
         JSONObject user = res.optJSONObject("user");
@@ -245,6 +359,19 @@ public class LoginActivity extends AppCompatActivity {
         if (stream == null) return "";
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+=======
+    private static String readResponseBody(HttpURLConnection conn, int code) throws Exception {
+        java.io.InputStreamReader reader;
+        if (code >= 400) {
+            var es = conn.getErrorStream();
+            if (es == null) return "";
+            reader = new InputStreamReader(es, StandardCharsets.UTF_8);
+        } else {
+            reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8);
+        }
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(reader)) {
+>>>>>>> origin/main
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line.trim());
