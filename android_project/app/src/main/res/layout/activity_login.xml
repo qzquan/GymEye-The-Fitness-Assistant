@@ -61,59 +61,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-<<<<<<< HEAD
             android:text="已有账户登录"
-=======
-            android:text="创建新账户"
->>>>>>> origin/main
             android:textColor="@color/login_text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-<<<<<<< HEAD
-=======
-        <!-- username -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvLabelUsername"
-                style="@style/LoginPillLabel"
-                android:layout_width="116dp"
-                android:layout_height="42dp"
-                android:background="@drawable/bg_pill_label"
-                android:gravity="center"
-                android:text="用户名"
-                android:textAllCaps="false" />
-
-            <EditText
-                android:id="@+id/etUsername"
-                style="@style/LoginInputField"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_input_outline"
-                android:hint=""
-                android:inputType="text"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
-        </LinearLayout>
-
->>>>>>> origin/main
         <!-- email -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
             android:layout_marginTop="20dp"
-=======
-            android:layout_marginTop="12dp"
->>>>>>> origin/main
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -173,54 +130,21 @@
                 android:paddingEnd="14dp" />
         </LinearLayout>
 
-<<<<<<< HEAD
+        <CheckBox
+            android:id="@+id/cbAutoLoginMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="自动登录"
+            android:textColor="@color/login_text_primary"
+            android:textSize="15sp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogIn"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="18dp"
             android:text="登录"
-=======
-        <!-- confirm -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvLabelConfirm"
-                style="@style/LoginPillLabel"
-                android:layout_width="116dp"
-                android:layout_height="42dp"
-                android:background="@drawable/bg_pill_label"
-                android:gravity="center"
-                android:text="确认"
-                android:textAllCaps="false" />
-
-            <EditText
-                android:id="@+id/etConfirm"
-                style="@style/LoginInputField"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_input_outline"
-                android:hint=""
-                android:inputType="textPassword"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
-        </LinearLayout>
-
-        <!-- or 上方：注册（无账户） -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSignUp"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="22dp"
-            android:text="注册"
->>>>>>> origin/main
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="17sp"
@@ -260,22 +184,12 @@
                 android:background="#FFCCCCCC" />
         </LinearLayout>
 
-<<<<<<< HEAD
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignUp"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="20dp"
             android:text="注册"
-=======
-        <!-- or 下方：进入仅密码登录页 -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogIn"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="20dp"
-            android:text="登录"
->>>>>>> origin/main
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="17sp"
