@@ -124,6 +124,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_input_outline"
+                android:drawableEnd="@android:drawable/presence_invisible"
+                android:drawablePadding="8dp"
                 android:hint=""
                 android:inputType="textPassword"
                 android:paddingStart="14dp"

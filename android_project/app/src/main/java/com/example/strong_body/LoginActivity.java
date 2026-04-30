@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                 AuthAccountStorage.upsert(this, current.email, current.nickname, current.token, false);
             }
         });
+        setupPasswordToggle(etPassword);
 
         btnLogIn.setOnClickListener(v -> attemptLogin());
         btnSignUp.setOnClickListener(v ->
@@ -161,6 +164,36 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(nickname)) return "?";
         char c = Character.toUpperCase(nickname.charAt(0));
         return Character.isLetterOrDigit(c) ? String.valueOf(c) : "?";
+    }
+
+    private void setupPasswordToggle(EditText editText) {
+        setPasswordVisibility(editText, false);
+        editText.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP
+                    && event.getX() >= editText.getWidth() - editText.getTotalPaddingRight()) {
+                boolean visible = Boolean.TRUE.equals(editText.getTag());
+                setPasswordVisibility(editText, !visible);
+                editText.performClick();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setPasswordVisibility(EditText editText, boolean visible) {
+        int cursorPos = Math.max(0, editText.getSelectionStart());
+        int inputType = InputType.TYPE_CLASS_TEXT
+                | (visible ? InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                : InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText.setInputType(inputType);
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                visible ? android.R.drawable.ic_menu_view : android.R.drawable.presence_invisible,
+                0
+        );
+        editText.setTag(visible);
+        editText.setSelection(Math.min(cursorPos, editText.length()));
     }
 
     private void attemptLogin() {

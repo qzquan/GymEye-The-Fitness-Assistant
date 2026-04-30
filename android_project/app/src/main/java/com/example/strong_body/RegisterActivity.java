@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,8 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirm = findViewById(R.id.etConfirm);
         MaterialButton btnSignUp = findViewById(R.id.btnSignUp);
         TextView tvBackToLogin = findViewById(R.id.tvBackToLogin);
+        setupPasswordToggle(etPassword);
+        setupPasswordToggle(etConfirm);
 
         btnSignUp.setOnClickListener(v -> attemptSignUp());
         tvBackToLogin.setOnClickListener(v -> {
@@ -53,6 +57,36 @@ public class RegisterActivity extends AppCompatActivity {
             startActivity(i);
             finish();
         });
+    }
+
+    private void setupPasswordToggle(EditText editText) {
+        setPasswordVisibility(editText, false);
+        editText.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP
+                    && event.getX() >= editText.getWidth() - editText.getTotalPaddingRight()) {
+                boolean visible = Boolean.TRUE.equals(editText.getTag());
+                setPasswordVisibility(editText, !visible);
+                editText.performClick();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setPasswordVisibility(EditText editText, boolean visible) {
+        int cursorPos = Math.max(0, editText.getSelectionStart());
+        int inputType = InputType.TYPE_CLASS_TEXT
+                | (visible ? InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                : InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        editText.setInputType(inputType);
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                visible ? android.R.drawable.ic_menu_view : android.R.drawable.presence_invisible,
+                0
+        );
+        editText.setTag(visible);
+        editText.setSelection(Math.min(cursorPos, editText.length()));
     }
 
     private void attemptSignUp() {
