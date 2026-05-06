@@ -54,6 +54,74 @@ def backendDir = rootProject.file("../backend")
 def backendStdout = new File(backendDir, "backend.autostart.stdout.log")
 def backendStderr = new File(backendDir, "backend.autostart.stderr.log")
 
+def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
+
+def addExistingNodeCandidate = { List<String> candidates, String path ->
+    if (path != null && path.trim()) {
+        def nodeFile = new File(path)
+        if (nodeFile.exists()) {
+            candidates.add(nodeFile.absolutePath)
+        }
+    }
+}
+
+def findNodeExecutable = {
+    def candidates = []
+    def configuredNode = project.findProperty("nodeExecutable")?.toString()?.trim()
+    def envNode = System.getenv("GYMEYE_NODE")?.trim()
+
+    if (configuredNode) {
+        candidates.add(configuredNode)
+    }
+    if (envNode) {
+        candidates.add(envNode)
+    }
+
+    if (isWindows) {
+        candidates.add("node.exe")
+        candidates.add("node")
+        addExistingNodeCandidate(candidates, new File(System.getenv("ProgramFiles") ?: "", "nodejs/node.exe").path)
+        addExistingNodeCandidate(candidates, new File(System.getenv("ProgramFiles(x86)") ?: "", "nodejs/node.exe").path)
+        addExistingNodeCandidate(candidates, new File(System.getenv("LOCALAPPDATA") ?: "", "Programs/nodejs/node.exe").path)
+    } else {
+        candidates.add("node")
+        addExistingNodeCandidate(candidates, "/usr/local/bin/node")
+        addExistingNodeCandidate(candidates, "/opt/homebrew/bin/node")
+        addExistingNodeCandidate(candidates, "/usr/bin/node")
+    }
+
+    return candidates.unique().find { candidate ->
+        try {
+            def probe = new ProcessBuilder(candidate, "--version")
+                    .redirectErrorStream(true)
+                    .start()
+            if (!probe.waitFor(3, java.util.concurrent.TimeUnit.SECONDS)) {
+                probe.destroyForcibly()
+                return false
+            }
+            return probe.exitValue() == 0
+        } catch (IOException ignored) {
+            return false
+        }
+    }
+}
+
+def shouldRequireBackendAutostart = {
+    project.hasProperty("requireBackendAutostart") ||
+            "true".equalsIgnoreCase(System.getenv("GYMEYE_REQUIRE_BACKEND"))
+}
+
+def skipBackendAutostart = { String reason ->
+    def message = "${reason}\n" +
+            "Skipping GymEye backend autostart so the Android debug build can continue.\n" +
+            "Install Node.js, or pass -PnodeExecutable=C:\\\\path\\\\to\\\\node.exe / set GYMEYE_NODE if Node is installed outside PATH.\n" +
+            "Pass -PrequireBackendAutostart=true to make this a build failure again."
+    if (shouldRequireBackendAutostart()) {
+        throw new GradleException(message)
+    }
+    logger.warn(message)
+}
+
 def isPortOpen = { int port ->
     try {
         new Socket("127.0.0.1", port).withCloseable {}
@@ -86,9 +154,15 @@ tasks.register("ensureBackendRunning") {
             throw new GradleException("GymEye backend entry not found: ${backendDir}")
         }
 
+        def nodeExecutable = findNodeExecutable()
+        if (nodeExecutable == null) {
+            skipBackendAutostart("Node.js executable was not found.")
+            return
+        }
+
         backendStdout.parentFile.mkdirs()
-        logger.lifecycle("Starting GymEye backend on port ${backendPort}...")
-        def process = new ProcessBuilder("node", "src/index.js")
+        logger.lifecycle("Starting GymEye backend on port ${backendPort} with ${nodeExecutable}...")
+        def process = new ProcessBuilder(nodeExecutable, "src/index.js")
                 .directory(backendDir)
                 .redirectOutput(ProcessBuilder.Redirect.appendTo(backendStdout))
                 .redirectError(ProcessBuilder.Redirect.appendTo(backendStderr))
@@ -101,12 +175,13 @@ tasks.register("ensureBackendRunning") {
                 return
             }
             if (!process.isAlive()) {
-                throw new GradleException("GymEye backend exited during startup. See ${backendStderr}")
+                skipBackendAutostart("GymEye backend exited during startup. See ${backendStderr}")
+                return
             }
             Thread.sleep(500)
         }
 
-        throw new GradleException("Timed out waiting for GymEye backend on port ${backendPort}. See ${backendStderr}")
+        skipBackendAutostart("Timed out waiting for GymEye backend on port ${backendPort}. See ${backendStderr}")
     }
 }
 

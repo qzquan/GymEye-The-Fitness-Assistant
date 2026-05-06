@@ -3,29 +3,30 @@
     android:id="@+id/layoutSavedAccountRow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_input_outline"
+    android:layout_marginBottom="@dimen/gymeye_space_8"
+    android:background="@drawable/bg_gymeye_card"
+    android:elevation="1dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="12dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="10dp">
+    android:paddingStart="@dimen/gymeye_space_12"
+    android:paddingTop="@dimen/gymeye_space_8"
+    android:paddingEnd="@dimen/gymeye_space_12"
+    android:paddingBottom="@dimen/gymeye_space_8">
 
     <TextView
         android:id="@+id/tvAvatarLetter"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:background="@drawable/bg_avatar_circle"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textColor="@color/gymeye_on_primary"
+        android:textSize="@dimen/gymeye_text_body"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/gymeye_space_12"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -35,27 +36,27 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/login_text_primary"
-            android:textSize="16sp"
+            android:textColor="@color/gymeye_text_primary"
+            android:textSize="@dimen/gymeye_text_body"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvSavedEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/gymeye_space_2"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/login_text_muted"
-            android:textSize="13sp" />
+            android:textColor="@color/gymeye_text_secondary"
+            android:textSize="@dimen/gymeye_text_label" />
 
         <TextView
             android:id="@+id/tvQuickLoginHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/login_teal_link"
-            android:textSize="12sp"
+            android:layout_marginTop="@dimen/gymeye_space_2"
+            android:textColor="@color/gymeye_accent_dark"
+            android:textSize="@dimen/gymeye_text_caption"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

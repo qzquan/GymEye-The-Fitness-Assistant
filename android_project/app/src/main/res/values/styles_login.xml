@@ -2,7 +2,7 @@
 <resources>
     <!-- 胶囊标签共用：字号与颜色 -->
     <style name="LoginPillLabelBase">
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">@dimen/gymeye_text_body</item>
         <item name="android:textColor">@color/login_text_primary</item>
     </style>
     <!-- 与 @font/font_family（Roboto 600）一致；无 GMS 时系统会回退 -->
@@ -13,7 +13,7 @@
 
     <!-- 注册表单输入框：与标签同款 semibold -->
     <style name="LoginInputField">
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">@dimen/gymeye_text_body</item>
         <item name="android:textColor">@color/login_text_primary</item>
         <item name="android:fontFamily">@font/font_family</item>
         <item name="fontFamily">@font/font_family</item>

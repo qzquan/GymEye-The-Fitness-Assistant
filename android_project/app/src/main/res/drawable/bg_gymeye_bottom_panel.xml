@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/gymeye_bottom_panel" />
+    <corners
+        android:topLeftRadius="@dimen/gymeye_radius_panel"
+        android:topRightRadius="@dimen/gymeye_radius_panel" />
+</shape>

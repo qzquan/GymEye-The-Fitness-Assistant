@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="gymeye_space_2">2dp</dimen>
+    <dimen name="gymeye_space_4">4dp</dimen>
+    <dimen name="gymeye_space_8">8dp</dimen>
+    <dimen name="gymeye_space_12">12dp</dimen>
+    <dimen name="gymeye_space_16">16dp</dimen>
+    <dimen name="gymeye_space_20">20dp</dimen>
+    <dimen name="gymeye_space_24">24dp</dimen>
+    <dimen name="gymeye_space_32">32dp</dimen>
+
+    <dimen name="gymeye_page_margin_horizontal">24dp</dimen>
+    <dimen name="gymeye_page_margin_vertical">24dp</dimen>
+    <dimen name="gymeye_section_gap">20dp</dimen>
+    <dimen name="gymeye_card_gap">12dp</dimen>
+
+    <dimen name="gymeye_radius_input">12dp</dimen>
+    <dimen name="gymeye_radius_button">14dp</dimen>
+    <dimen name="gymeye_radius_card">16dp</dimen>
+    <dimen name="gymeye_radius_panel">24dp</dimen>
+    <dimen name="gymeye_radius_tag">999dp</dimen>
+
+    <dimen name="gymeye_button_height">52dp</dimen>
+    <dimen name="gymeye_touch_target">48dp</dimen>
+    <dimen name="gymeye_input_height">48dp</dimen>
+
+    <dimen name="gymeye_text_display">40sp</dimen>
+    <dimen name="gymeye_text_headline">28sp</dimen>
+    <dimen name="gymeye_text_title">22sp</dimen>
+    <dimen name="gymeye_text_subtitle">18sp</dimen>
+    <dimen name="gymeye_text_body">15sp</dimen>
+    <dimen name="gymeye_text_label">13sp</dimen>
+    <dimen name="gymeye_text_caption">12sp</dimen>
+</resources>
