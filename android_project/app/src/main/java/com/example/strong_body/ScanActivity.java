@@ -5,16 +5,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -24,26 +22,30 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScanActivity extends AppCompatActivity {
 
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
+    private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("\\((\\d+%)\\)");
+
     private PreviewView viewFinder;
     private ActivityResultLauncher<String> requestPermissionLauncher;
-    private Button btnAnalyze;
+    private MaterialButton btnAnalyze;
     private TextView tvScanTip;
+    private TextView tvDetectedName;
+    private TextView tvConfidence;
 
     private YOLOv8Detector yoloDetector;
     private ExecutorService cameraExecutor;
 
-    // 当前识别结果
     private String currentResult = "";
-    private boolean isShowingDialog = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +58,14 @@ public class ScanActivity extends AppCompatActivity {
         viewFinder = findViewById(R.id.viewFinder);
         btnAnalyze = findViewById(R.id.btnAnalyze);
         tvScanTip = findViewById(R.id.tvScanTip);
-        cameraExecutor = Executors.newSingleThreadExecutor();
+        tvDetectedName = findViewById(R.id.tvDetectedName);
+        tvConfidence = findViewById(R.id.tvConfidence);
+        ImageButton btnBack = findViewById(R.id.btnScanBack);
+        btnBack.setOnClickListener(v -> finish());
+        btnAnalyze.setEnabled(false);
+        btnAnalyze.setAlpha(0.62f);
 
+        cameraExecutor = Executors.newSingleThreadExecutor();
         yoloDetector = new YOLOv8Detector(this, "best_float32.tflite", "labels.txt");
 
         requestPermissionLauncher = registerForActivityResult(
@@ -67,18 +75,14 @@ public class ScanActivity extends AppCompatActivity {
                     else Toast.makeText(this, "相机权限被拒绝", Toast.LENGTH_LONG).show();
                 });
 
-        // 点击按钮跳转到详情页面
         btnAnalyze.setOnClickListener(v -> {
-            // 提取器材名称（去掉置信度）
-            String equipmentName = currentResult.replaceAll("\\(\\d+%\\)", "").trim();
+            String equipmentName = extractEquipmentName(currentResult);
 
-            // 检查是否识别到了有效的器材
-            if (equipmentName.isEmpty() || equipmentName.equals("正在识别...") || equipmentName.contains("未识别")) {
+            if (!isValidEquipmentName(equipmentName)) {
                 Toast.makeText(this, "请先扫描健身器材", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // 跳转到器材详情页面
             Intent intent = new Intent(ScanActivity.this, EquipmentDetailActivity.class);
             intent.putExtra(EquipmentDetailActivity.EXTRA_EQUIPMENT_NAME, equipmentName);
             startActivity(intent);
@@ -115,17 +119,9 @@ public class ScanActivity extends AppCompatActivity {
                     Bitmap rotatedBitmap = rotateBitmap(bitmap, rotationDegrees);
 
                     String result = yoloDetector.detect(rotatedBitmap);
-
                     currentResult = result;
 
-                    runOnUiThread(() -> {
-                        btnAnalyze.setText(result);
-
-                        // 更新提示文字
-                        if (result.contains("%")) {
-                            tvScanTip.setText("识别成功，点击查看详情");
-                        }
-                    });
+                    runOnUiThread(() -> updateRecognitionUi(result));
 
                     imageProxy.close();
                 });
@@ -145,6 +141,41 @@ public class ScanActivity extends AppCompatActivity {
         android.graphics.Matrix matrix = new android.graphics.Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    private void updateRecognitionUi(String result) {
+        String equipmentName = extractEquipmentName(result);
+        if (isValidEquipmentName(equipmentName)) {
+            tvDetectedName.setText(equipmentName);
+            tvConfidence.setText("置信度 " + extractConfidence(result));
+            tvScanTip.setText("识别成功，点击查看详情");
+            btnAnalyze.setEnabled(true);
+            btnAnalyze.setAlpha(1f);
+        } else {
+            tvDetectedName.setText(TextUtils.isEmpty(result) ? "正在识别..." : result);
+            tvConfidence.setText("置信度 --");
+            tvScanTip.setText("将器械放入扫描框");
+            btnAnalyze.setEnabled(false);
+            btnAnalyze.setAlpha(0.62f);
+        }
+    }
+
+    private static String extractEquipmentName(String result) {
+        if (TextUtils.isEmpty(result)) return "";
+        return CONFIDENCE_PATTERN.matcher(result).replaceAll("").trim();
+    }
+
+    private static String extractConfidence(String result) {
+        if (TextUtils.isEmpty(result)) return "--";
+        Matcher matcher = CONFIDENCE_PATTERN.matcher(result);
+        return matcher.find() ? matcher.group(1) : "--";
+    }
+
+    private static boolean isValidEquipmentName(String equipmentName) {
+        return !TextUtils.isEmpty(equipmentName)
+                && !"正在识别...".equals(equipmentName)
+                && !equipmentName.contains("未识别")
+                && !equipmentName.contains("识别中");
     }
 
     @Override

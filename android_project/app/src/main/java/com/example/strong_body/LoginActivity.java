@@ -29,9 +29,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/**
- * 注册页：Sign up → /api/user/register。Log In：可选中已保存且开启自动登录的账号后一键进入；否则跳转登录页。
- */
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
@@ -40,16 +37,18 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etConfirm;
     private MaterialButton btnSignUp;
     private MaterialButton btnLogIn;
+    private MaterialButton btnRegisterSubmit;
     private TextView tvGuest;
+    private TextView tvCancelRegister;
 
+    private LinearLayout layoutRegisterPanel;
     private LinearLayout layoutSavedAccountsSection;
     private TextView tvSavedAccountsHeader;
+    private ScrollView scrollAuthWelcome;
     private ScrollView svSavedAccounts;
     private LinearLayout llSavedAccounts;
 
-    private boolean savedAccountsExpanded;
-    /** 当前选中的已保存邮箱；用于 Log In 行为 */
-    private String selectedSavedEmail;
+    private boolean savedAccountsExpanded = true;
 
     private static final String API_REGISTER = ApiConfig.BASE_URL + "/api/user/register";
 
@@ -64,20 +63,25 @@ public class LoginActivity extends AppCompatActivity {
         etConfirm = findViewById(R.id.etConfirm);
         btnSignUp = findViewById(R.id.btnSignUp);
         btnLogIn = findViewById(R.id.btnLogIn);
+        btnRegisterSubmit = findViewById(R.id.btnRegisterSubmit);
         tvGuest = findViewById(R.id.tvGuest);
+        tvCancelRegister = findViewById(R.id.tvCancelRegister);
 
+        layoutRegisterPanel = findViewById(R.id.layoutRegisterPanel);
         layoutSavedAccountsSection = findViewById(R.id.layoutSavedAccountsSection);
         tvSavedAccountsHeader = findViewById(R.id.tvSavedAccountsHeader);
+        scrollAuthWelcome = findViewById(R.id.scrollAuthWelcome);
         svSavedAccounts = findViewById(R.id.svSavedAccounts);
         llSavedAccounts = findViewById(R.id.llSavedAccounts);
 
-        btnSignUp.setOnClickListener(v -> attemptSignUp());
-
-        btnLogIn.setOnClickListener(v -> onLogInClicked());
-
+        btnLogIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
+        btnSignUp.setOnClickListener(v -> showRegisterPanel());
+        btnRegisterSubmit.setOnClickListener(v -> attemptSignUp());
+        tvCancelRegister.setOnClickListener(v -> hideRegisterPanel());
         tvSavedAccountsHeader.setOnClickListener(v -> toggleSavedAccountsExpanded());
-
         tvGuest.setOnClickListener(v -> goToHome("Continue as guest"));
+
+        maybeAutoLogin();
     }
 
     @Override
@@ -85,6 +89,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         AuthAccountStorage.migrateLegacyIfNeeded(this);
         refreshSavedAccountsPanel();
+    }
+
+    private void maybeAutoLogin() {
+        AuthAccountStorage.migrateLegacyIfNeeded(this);
+        SavedAccount account = AuthAccountStorage.getAutoLoginAccount(this);
+        if (account == null) {
+            return;
+        }
+        AuthAccountStorage.touch(this, account.email);
+        goToHome("Welcome back");
+    }
+
+    private void showRegisterPanel() {
+        layoutRegisterPanel.setVisibility(View.VISIBLE);
+        layoutRegisterPanel.post(() -> scrollAuthWelcome.smoothScrollTo(0, layoutRegisterPanel.getBottom()));
+    }
+
+    private void hideRegisterPanel() {
+        layoutRegisterPanel.setVisibility(View.GONE);
     }
 
     private void toggleSavedAccountsExpanded() {
@@ -95,24 +118,19 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateSavedAccountsHeaderLabel() {
         String arrow = savedAccountsExpanded ? "▲" : "▼";
-        tvSavedAccountsHeader.setText("已保存账号 " + arrow);
+        tvSavedAccountsHeader.setText("最近登录账号 " + arrow);
     }
 
     private void refreshSavedAccountsPanel() {
         List<SavedAccount> accounts = AuthAccountStorage.loadSortedNewestFirst(this);
         if (accounts.isEmpty()) {
             layoutSavedAccountsSection.setVisibility(View.GONE);
-            selectedSavedEmail = null;
             return;
         }
 
         layoutSavedAccountsSection.setVisibility(View.VISIBLE);
+        svSavedAccounts.setVisibility(savedAccountsExpanded ? View.VISIBLE : View.GONE);
         updateSavedAccountsHeaderLabel();
-
-        if (selectedSavedEmail == null
-                || AuthAccountStorage.findByEmail(this, selectedSavedEmail) == null) {
-            selectedSavedEmail = accounts.get(0).email;
-        }
 
         llSavedAccounts.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -126,22 +144,12 @@ public class LoginActivity extends AppCompatActivity {
             tvLetter.setText(initialLetter(a.nickname));
             tvNick.setText(a.nickname);
             tvMail.setText(a.email);
-            if (a.canQuickLogin()) {
-                tvHint.setVisibility(View.VISIBLE);
-                tvHint.setText("已开启自动登录 · 选中后点 Log In 可免输密码");
-            } else {
-                tvHint.setVisibility(View.GONE);
-            }
-
-            boolean selected = a.email.equalsIgnoreCase(selectedSavedEmail);
-            row.findViewById(R.id.layoutSavedAccountRow).setBackgroundResource(
-                    selected ? R.drawable.bg_saved_account_row_selected : R.drawable.bg_input_outline);
+            tvHint.setVisibility(View.VISIBLE);
+            tvHint.setText(a.canQuickLogin() ? "已开启自动登录" : "点击使用此邮箱登录");
+            row.findViewById(R.id.layoutSavedAccountRow).setBackgroundResource(R.drawable.bg_gymeye_card);
 
             String email = a.email;
-            row.setOnClickListener(v -> {
-                selectedSavedEmail = email;
-                refreshSavedAccountsPanel();
-            });
+            row.setOnClickListener(v -> openSignIn(email));
 
             llSavedAccounts.addView(row);
         }
@@ -153,20 +161,12 @@ public class LoginActivity extends AppCompatActivity {
         return Character.isLetterOrDigit(c) ? String.valueOf(c) : "?";
     }
 
-    private void onLogInClicked() {
-        if (!TextUtils.isEmpty(selectedSavedEmail)) {
-            SavedAccount acc = AuthAccountStorage.findByEmail(this, selectedSavedEmail);
-            if (acc != null && acc.canQuickLogin()) {
-                AuthAccountStorage.touch(this, acc.email);
-                goToHome("欢迎回来");
-                return;
-            }
-            Intent i = new Intent(this, SignInActivity.class);
-            i.putExtra(SignInActivity.EXTRA_INITIAL_EMAIL, selectedSavedEmail);
-            startActivity(i);
-            return;
+    private void openSignIn(String email) {
+        Intent i = new Intent(this, SignInActivity.class);
+        if (!TextUtils.isEmpty(email)) {
+            i.putExtra(SignInActivity.EXTRA_INITIAL_EMAIL, email);
         }
-        startActivity(new Intent(this, SignInActivity.class));
+        startActivity(i);
     }
 
     private void attemptSignUp() {
@@ -176,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
         String confirm = etConfirm.getText() == null ? "" : etConfirm.getText().toString();
 
         if (TextUtils.isEmpty(nickname)) {
-            etUsername.setError("请输入显示名称（将用于主页头像旁）");
+            etUsername.setError("请输入显示名称");
             return;
         }
         if (TextUtils.isEmpty(email)) {
@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
                 byte[] input = jsonStr.getBytes(StandardCharsets.UTF_8);
                 conn.setRequestProperty("Content-Length", String.valueOf(input.length));
 
-                Log.d("LoginActivity", "POST register: " + jsonStr);
+                Log.d("LoginActivity", "POST register email=" + email);
 
                 try (OutputStream os = conn.getOutputStream()) {
                     os.write(input, 0, input.length);

@@ -1,16 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Strong_body" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    <style name="Theme.Strong_body" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/gymeye_primary</item>
+        <item name="colorPrimaryVariant">@color/gymeye_primary_dark</item>
+        <item name="colorOnPrimary">@color/gymeye_on_primary</item>
+        <item name="colorSecondary">@color/gymeye_accent</item>
+        <item name="colorSecondaryVariant">@color/gymeye_accent_dark</item>
+        <item name="colorOnSecondary">@color/gymeye_on_accent</item>
+        <item name="colorAccent">@color/gymeye_accent</item>
+        <item name="colorError">@color/gymeye_error</item>
+        <item name="colorSurface">@color/gymeye_night_surface</item>
+        <item name="colorOnSurface">@color/gymeye_night_text_primary</item>
+        <item name="android:colorBackground">@color/gymeye_night_background</item>
+        <item name="android:fontFamily">sans-serif</item>
+
+        <item name="android:windowBackground">@color/gymeye_night_background</item>
+        <item name="android:statusBarColor">@color/gymeye_night_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/gymeye_night_background</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+
+        <item name="materialButtonStyle">@style/Widget.GymEye.MaterialButton</item>
+        <item name="buttonStyle">@style/Widget.GymEye.Button</item>
+        <item name="checkboxStyle">@style/Widget.GymEye.CheckBox</item>
     </style>
 </resources>

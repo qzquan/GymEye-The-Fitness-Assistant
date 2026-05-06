@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 多账号本地列表（SharedPreferences JSON），按 {@link SavedAccount#lastUsedMs} 新到旧排序。
+ * Local account list stored as SharedPreferences JSON.
  */
 public final class AuthAccountStorage {
 
@@ -22,69 +22,135 @@ public final class AuthAccountStorage {
     private AuthAccountStorage() {}
 
     public static List<SavedAccount> loadSortedNewestFirst(Context ctx) {
-        List<SavedAccount> list = loadAll(ctx);
-        Collections.sort(list, (a, b) -> Long.compare(b.lastUsedMs, a.lastUsedMs));
+        List<SavedAccount> list = new ArrayList<>();
+        for (SavedAccount account : loadAll(ctx)) {
+            if (account.remembered) {
+                list.add(account);
+            }
+        }
+        sortNewestFirst(list);
         return list;
     }
 
     public static SavedAccount findByEmail(Context ctx, String email) {
         if (TextUtils.isEmpty(email)) return null;
-        String key = email.trim().toLowerCase();
-        for (SavedAccount a : loadAll(ctx)) {
-            if (key.equals(a.email.toLowerCase())) return a;
+        String key = normalizeEmail(email);
+        for (SavedAccount account : loadAll(ctx)) {
+            if (key.equals(account.email.toLowerCase())) return account;
         }
         return null;
     }
 
-    /** 最近使用的一条，用于登录页预填邮箱 */
     public static SavedAccount getMostRecentlyUsed(Context ctx) {
         List<SavedAccount> list = loadSortedNewestFirst(ctx);
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public static void upsert(Context ctx, String email, String nickname, String token, boolean autoLogin) {
-        if (TextUtils.isEmpty(email)) return;
-        String em = email.trim().toLowerCase();
-        String nick = TextUtils.isEmpty(nickname) ? em.split("@")[0] : nickname.trim();
-        String tok = token != null ? token : "";
-        long now = System.currentTimeMillis();
+    public static SavedAccount getAutoLoginAccount(Context ctx) {
+        List<SavedAccount> list = loadAll(ctx);
+        sortNewestFirst(list);
+        for (SavedAccount account : list) {
+            if (account.canQuickLogin()) {
+                return account;
+            }
+        }
+        return null;
+    }
 
-        SavedAccount old = findByEmail(ctx, em);
-        String mergedToken = !tok.isEmpty() ? tok : (old != null ? old.token : "");
-        SavedAccount merged = new SavedAccount(em, nick, mergedToken, autoLogin, now);
+    public static void saveLoginState(
+            Context ctx,
+            String email,
+            String nickname,
+            String token,
+            boolean rememberAccount,
+            boolean autoLogin
+    ) {
+        if (TextUtils.isEmpty(email)) return;
+        String normalizedEmail = normalizeEmail(email);
+
+        if (!rememberAccount && !autoLogin) {
+            remove(ctx, normalizedEmail);
+            return;
+        }
+
+        String nick = TextUtils.isEmpty(nickname) ? normalizedEmail.split("@")[0] : nickname.trim();
+        String storedToken = autoLogin && token != null ? token : "";
+        SavedAccount merged = new SavedAccount(
+                normalizedEmail,
+                nick,
+                rememberAccount,
+                storedToken,
+                autoLogin,
+                System.currentTimeMillis()
+        );
 
         ArrayList<SavedAccount> next = new ArrayList<>();
-        for (SavedAccount a : loadAll(ctx)) {
-            if (!em.equalsIgnoreCase(a.email)) {
-                next.add(a);
+        for (SavedAccount account : loadAll(ctx)) {
+            if (!normalizedEmail.equalsIgnoreCase(account.email)) {
+                next.add(account);
             }
         }
         next.add(merged);
         saveAll(ctx, next);
     }
 
-    /** 仅更新最近使用时间（一键登录成功时） */
+    public static void upsert(Context ctx, String email, String nickname, String token, boolean autoLogin) {
+        saveLoginState(ctx, email, nickname, token, true, autoLogin);
+    }
+
     public static void touch(Context ctx, String email) {
-        SavedAccount a = findByEmail(ctx, email);
-        if (a == null) return;
-        upsert(ctx, a.email, a.nickname, a.token, a.autoLogin);
+        SavedAccount account = findByEmail(ctx, email);
+        if (account == null) return;
+
+        ArrayList<SavedAccount> next = new ArrayList<>();
+        for (SavedAccount existing : loadAll(ctx)) {
+            if (!account.email.equalsIgnoreCase(existing.email)) {
+                next.add(existing);
+            }
+        }
+        next.add(new SavedAccount(
+                account.email,
+                account.nickname,
+                account.remembered,
+                account.token,
+                account.autoLogin,
+                System.currentTimeMillis()
+        ));
+        saveAll(ctx, next);
+    }
+
+    private static void remove(Context ctx, String email) {
+        ArrayList<SavedAccount> next = new ArrayList<>();
+        for (SavedAccount account : loadAll(ctx)) {
+            if (!email.equalsIgnoreCase(account.email)) {
+                next.add(account);
+            }
+        }
+        saveAll(ctx, next);
     }
 
     private static List<SavedAccount> loadAll(Context ctx) {
-        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String raw = p.getString(KEY_ACCOUNTS_JSON, "[]");
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String raw = prefs.getString(KEY_ACCOUNTS_JSON, "[]");
         ArrayList<SavedAccount> out = new ArrayList<>();
         try {
             JSONArray arr = new JSONArray(raw);
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject o = arr.getJSONObject(i);
-                String email = o.optString("email", "");
+                String email = normalizeEmail(o.optString("email", ""));
                 if (email.isEmpty()) continue;
+
+                boolean autoLogin = o.optBoolean("autoLogin", false);
+                boolean remembered = o.optBoolean("remembered", true);
+                String token = autoLogin ? o.optString("token", "") : "";
+                if (!remembered && !autoLogin) continue;
+
                 out.add(new SavedAccount(
                         email,
                         o.optString("nickname", email.split("@")[0]),
-                        o.optString("token", ""),
-                        o.optBoolean("autoLogin", false),
+                        remembered,
+                        token,
+                        autoLogin,
                         o.optLong("lastUsedMs", 0L)
                 ));
             }
@@ -96,13 +162,15 @@ public final class AuthAccountStorage {
     private static void saveAll(Context ctx, List<SavedAccount> accounts) {
         JSONArray arr = new JSONArray();
         try {
-            for (SavedAccount a : accounts) {
+            for (SavedAccount account : accounts) {
+                if (!account.remembered && !account.autoLogin) continue;
                 JSONObject o = new JSONObject();
-                o.put("email", a.email);
-                o.put("nickname", a.nickname);
-                o.put("token", a.token);
-                o.put("autoLogin", a.autoLogin);
-                o.put("lastUsedMs", a.lastUsedMs);
+                o.put("email", account.email);
+                o.put("nickname", account.nickname);
+                o.put("remembered", account.remembered);
+                o.put("token", account.autoLogin ? account.token : "");
+                o.put("autoLogin", account.autoLogin);
+                o.put("lastUsedMs", account.lastUsedMs);
                 arr.put(o);
             }
         } catch (Exception ignored) {
@@ -112,14 +180,24 @@ public final class AuthAccountStorage {
                 .apply();
     }
 
-    /** 迁移旧版仅保存邮箱的键（无 token，无法一键登录，但可预填邮箱） */
     public static void migrateLegacyIfNeeded(Context ctx) {
-        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (p.contains(KEY_ACCOUNTS_JSON)) return;
-        String oldEmail = p.getString("saved_email", null);
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (prefs.contains(KEY_ACCOUNTS_JSON)) {
+            saveAll(ctx, loadAll(ctx));
+            return;
+        }
+
+        String oldEmail = prefs.getString("saved_email", null);
         if (TextUtils.isEmpty(oldEmail)) return;
-        boolean oldAuto = p.getBoolean("auto_login", false);
-        upsert(ctx, oldEmail, oldEmail.split("@")[0], "", oldAuto);
-        p.edit().remove("saved_email").remove("auto_login").apply();
+        saveLoginState(ctx, oldEmail, oldEmail.split("@")[0], "", true, false);
+        prefs.edit().remove("saved_email").remove("auto_login").apply();
+    }
+
+    private static void sortNewestFirst(List<SavedAccount> list) {
+        Collections.sort(list, (a, b) -> Long.compare(b.lastUsedMs, a.lastUsedMs));
+    }
+
+    private static String normalizeEmail(String email) {
+        return email == null ? "" : email.trim().toLowerCase();
     }
 }
