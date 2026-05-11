@@ -119,6 +119,11 @@ public final class AuthAccountStorage {
         saveAll(ctx, next);
     }
 
+    public static void logout(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        prefs.edit().remove(KEY_ACCOUNTS_JSON).apply();
+    }
+
     private static void remove(Context ctx, String email) {
         ArrayList<SavedAccount> next = new ArrayList<>();
         for (SavedAccount account : loadAll(ctx)) {
