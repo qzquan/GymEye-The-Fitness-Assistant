@@ -11,6 +11,8 @@ The backend now uses a local JSON data file at `backend/data/db.json` by default
 
 The Android debug build starts the local backend automatically. Android Studio Run, `gradlew installDebug`, and `gradlew assembleDebug` trigger `:app:ensureBackendRunning`, which starts `node backend/src/index.js` when port `8080` is not already listening.
 
+If Android Studio cannot find Node.js, the Android build now continues and prints a warning. Install Node.js, set `GYMEYE_NODE` to the full `node.exe` path, or pass `-PnodeExecutable=C:\path\to\node.exe`. Pass `-PrequireBackendAutostart=true` if you want missing backend startup to fail the build.
+
 To skip this behavior for a build:
 
 ```powershell
