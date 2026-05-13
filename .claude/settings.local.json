@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(curl -s http://localhost:8080/api/exercises/equipment/3)",
-      "Bash(curl -s \"http://localhost:8080/api/exercises?bodyPartId=4\")",
-      "Bash(curl -s http://localhost:8080/api/equipment)"
-    ]
-  }
-}
