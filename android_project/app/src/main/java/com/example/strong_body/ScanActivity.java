@@ -34,6 +34,8 @@ public class ScanActivity extends AppCompatActivity {
 
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("\\((\\d+%)\\)");
+    private static final String DETECTING_TEXT = "正在识别...";
+    private static final int STABLE_DETECTION_FRAMES = 3;
 
     private PreviewView viewFinder;
     private ActivityResultLauncher<String> requestPermissionLauncher;
@@ -46,6 +48,10 @@ public class ScanActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
 
     private String currentResult = "";
+    private String lockedEquipmentName = "";
+    private String pendingEquipmentName = "";
+    private String pendingResult = "";
+    private int pendingValidFrames = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,9 +125,7 @@ public class ScanActivity extends AppCompatActivity {
                     Bitmap rotatedBitmap = rotateBitmap(bitmap, rotationDegrees);
 
                     String result = yoloDetector.detect(rotatedBitmap);
-                    currentResult = result;
-
-                    runOnUiThread(() -> updateRecognitionUi(result));
+                    runOnUiThread(() -> handleDetectionResult(result));
 
                     imageProxy.close();
                 });
@@ -143,21 +147,66 @@ public class ScanActivity extends AppCompatActivity {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    private void updateRecognitionUi(String result) {
+    private void handleDetectionResult(String result) {
         String equipmentName = extractEquipmentName(result);
         if (isValidEquipmentName(equipmentName)) {
-            tvDetectedName.setText(equipmentName);
-            tvConfidence.setText("置信度 " + extractConfidence(result));
-            tvScanTip.setText("识别成功，点击查看详情");
-            btnAnalyze.setEnabled(true);
-            btnAnalyze.setAlpha(1f);
-        } else {
-            tvDetectedName.setText(TextUtils.isEmpty(result) ? "正在识别..." : result);
-            tvConfidence.setText("置信度 --");
-            tvScanTip.setText("将器械放入扫描框");
-            btnAnalyze.setEnabled(false);
-            btnAnalyze.setAlpha(0.62f);
+            if (equipmentName.equals(lockedEquipmentName)) {
+                currentResult = result;
+                showDetectedResult(equipmentName, extractConfidence(result));
+                return;
+            }
+
+            if (equipmentName.equals(pendingEquipmentName)) {
+                pendingValidFrames++;
+            } else {
+                pendingEquipmentName = equipmentName;
+                pendingResult = result;
+                pendingValidFrames = 1;
+            }
+
+            if (pendingValidFrames >= STABLE_DETECTION_FRAMES) {
+                lockedEquipmentName = pendingEquipmentName;
+                currentResult = pendingResult;
+                showDetectedResult(lockedEquipmentName, extractConfidence(currentResult));
+            } else if (TextUtils.isEmpty(currentResult)) {
+                showPendingRecognitionState();
+            }
+            return;
         }
+
+        if (!TextUtils.isEmpty(currentResult)) {
+            return;
+        }
+
+        currentResult = "";
+        pendingEquipmentName = "";
+        pendingResult = "";
+        pendingValidFrames = 0;
+        showScanningState(result);
+    }
+
+    private void showDetectedResult(String equipmentName, String confidence) {
+        tvDetectedName.setText(equipmentName);
+        tvConfidence.setText("置信度 " + confidence);
+        tvScanTip.setText("识别成功，点击查看详情");
+        btnAnalyze.setEnabled(true);
+        btnAnalyze.setAlpha(1f);
+    }
+
+    private void showPendingRecognitionState() {
+        tvDetectedName.setText(DETECTING_TEXT);
+        tvConfidence.setText("置信度 --");
+        tvScanTip.setText("识别中，确认后自动显示结果");
+        btnAnalyze.setEnabled(false);
+        btnAnalyze.setAlpha(0.62f);
+    }
+
+    private void showScanningState(String result) {
+        tvDetectedName.setText(TextUtils.isEmpty(result) ? DETECTING_TEXT : result);
+        tvConfidence.setText("置信度 --");
+        tvScanTip.setText("将器械放入扫描框");
+        btnAnalyze.setEnabled(false);
+        btnAnalyze.setAlpha(0.62f);
     }
 
     private static String extractEquipmentName(String result) {
@@ -181,6 +230,8 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cameraExecutor.shutdown();
+        if (cameraExecutor != null && !cameraExecutor.isShutdown()) {
+            cameraExecutor.shutdown();
+        }
     }
 }
