@@ -42,7 +42,7 @@ public class StatisticsActivity extends AppCompatActivity {
         tvTotalSets.setText("0 组");
         tvStreakDays.setText("0 天");
 
-        String[] equipments = new String[]{"坐姿推胸 😌", "坐姿腿弯举 😐", "坐姿腿屈伸 🥵"};
+        String[] equipments = new String[]{"坐姿推胸", "坐姿腿弯举", "坐姿腿屈伸"};
         for (String eq : equipments) {
             allEquipmentEntries.put(eq, new ArrayList<>());
             currentDayIndexes.put(eq, 0);
