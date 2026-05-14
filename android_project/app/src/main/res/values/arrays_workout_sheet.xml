@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="workout_sheet_exercise_suggestions">
+        <item>坐姿推胸</item>
+        <item>杠铃卧推</item>
+        <item>哑铃飞鸟</item>
+        <item>高位下拉</item>
+        <item>坐姿划船</item>
+        <item>杠铃深蹲</item>
+        <item>腿举</item>
+        <item>罗马尼亚硬拉</item>
+        <item>杠铃推举</item>
+        <item>侧平举</item>
+        <item>二头弯举</item>
+        <item>绳索下压</item>
+        <item>卷腹</item>
+        <item>平板支撑</item>
+    </string-array>
+    <string-array name="workout_sheet_body_part_suggestions">
+        <item>胸部</item>
+        <item>背部</item>
+        <item>腿部</item>
+        <item>肩部</item>
+        <item>手臂</item>
+        <item>核心</item>
+        <item>全身</item>
+    </string-array>
+</resources>

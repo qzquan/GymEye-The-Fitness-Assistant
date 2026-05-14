@@ -16,10 +16,12 @@ const defaultState = {
   users: [],
   equipment: [],
   history: [],
+  workout_logs: [],
   counters: {
     users: 0,
     equipment: 0,
-    history: 0
+    history: 0,
+    workout_logs: 0
   }
 };
 
@@ -94,9 +96,13 @@ async function normalizeState(state) {
     }
   };
 
-  for (const key of ['users', 'equipment', 'history']) {
+  for (const key of ['users', 'equipment', 'history', 'workout_logs']) {
     if (!Array.isArray(normalized[key])) {
       normalized[key] = [];
+      changed = true;
+    }
+    // Also write back if state was missing this key (so it gets persisted)
+    if (!Array.isArray(state?.[key])) {
       changed = true;
     }
   }
@@ -104,7 +110,8 @@ async function normalizeState(state) {
   const counterTargets = {
     users: maxId(normalized.users),
     equipment: maxId(normalized.equipment),
-    history: maxId(normalized.history)
+    history: maxId(normalized.history),
+    workout_logs: maxId(normalized.workout_logs || [])
   };
   for (const [key, value] of Object.entries(counterTargets)) {
     if (!Number.isInteger(normalized.counters[key]) || normalized.counters[key] < value) {
@@ -369,4 +376,160 @@ export async function getHistoryStats(userId) {
     uniqueEquipment: counts.size,
     topEquipment
   };
+}
+
+export async function createWorkoutLog(userId, payload) {
+  return withStateMutation(state => {
+    const id = nextId(state, 'workout_logs');
+    const record = {
+      id,
+      user_id: userId,
+      exercise_name: payload.exercise_name,
+      sets: payload.sets ?? null,
+      reps_per_set: payload.reps_per_set ?? null,
+      weight_kg: payload.weight_kg ?? null,
+      duration_minutes: payload.duration_minutes ?? null,
+      feeling: payload.feeling,
+      body_part: payload.body_part ?? null,
+      performed_at: payload.performed_at,
+      created_at: new Date().toISOString()
+    };
+    state.workout_logs.push(record);
+    return clone(record);
+  });
+}
+
+export async function listWorkoutLogs({ userId, limit, offset, from, to }) {
+  const state = await readState();
+  let rows = (state.workout_logs || [])
+    .filter(item => item.user_id === userId)
+    .sort((a, b) => String(b.performed_at).localeCompare(String(a.performed_at)));
+
+  if (from) {
+    rows = rows.filter(item => item.performed_at >= from);
+  }
+  if (to) {
+    const toEnd = to + 'T23:59:59.999Z';
+    rows = rows.filter(item => item.performed_at <= toEnd);
+  }
+
+  const total = rows.length;
+  return {
+    total,
+    rows: clone(rows.slice(offset, offset + limit))
+  };
+}
+
+export async function getWorkoutStats(userId) {
+  const state = await readState();
+  const logs = (state.workout_logs || []).filter(item => item.user_id === userId);
+
+  // Total workouts count
+  const totalWorkouts = logs.length;
+
+  // Total duration
+  const totalDurationMinutes = logs.reduce((sum, item) => sum + (item.duration_minutes || 0), 0);
+
+  // Most trained body part
+  const bodyPartCounts = new Map();
+  for (const item of logs) {
+    if (item.body_part) {
+      bodyPartCounts.set(item.body_part, (bodyPartCounts.get(item.body_part) || 0) + 1);
+    }
+  }
+  const topBodyParts = [...bodyPartCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, count]) => ({ name, count }));
+
+  // Consecutive check-in days (streak)
+  const uniqueDays = new Set(
+    logs.map(item => String(item.performed_at).slice(0, 10))
+  );
+  const sortedDays = [...uniqueDays].sort().reverse();
+  let streak = 0;
+  const today = new Date().toISOString().slice(0, 10);
+  let expected = today;
+  for (const day of sortedDays) {
+    if (day === expected) {
+      streak++;
+      const d = new Date(expected);
+      d.setDate(d.getDate() - 1);
+      expected = d.toISOString().slice(0, 10);
+    } else if (streak === 0) {
+      // Start streak from most recent day if today has no workout
+      expected = day;
+      streak = 1;
+      const d = new Date(expected);
+      d.setDate(d.getDate() - 1);
+      expected = d.toISOString().slice(0, 10);
+    } else {
+      break;
+    }
+  }
+
+  // Weekly training count (this week Mon-Sun)
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + mondayOffset);
+  const mondayStr = monday.toISOString().slice(0, 10);
+  const weeklyCount = logs.filter(item =>
+    String(item.performed_at).slice(0, 10) >= mondayStr
+  ).length;
+
+  // Weight progression data (grouped by exercise, sorted by date)
+  const weightProgression = new Map();
+  for (const item of logs) {
+    if (item.weight_kg == null) continue;
+    const key = item.exercise_name;
+    if (!weightProgression.has(key)) {
+      weightProgression.set(key, []);
+    }
+    weightProgression.get(key).push({
+      date: String(item.performed_at).slice(0, 10),
+      weight: item.weight_kg
+    });
+  }
+  for (const entries of weightProgression.values()) {
+    entries.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  const weightProgressionData = Object.fromEntries(weightProgression);
+
+  // Training calendar (last 90 days)
+  const calendarDays = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const count = logs.filter(item =>
+      String(item.performed_at).slice(0, 10) === dateStr
+    ).length;
+    calendarDays.push({ date: dateStr, count });
+  }
+
+  return {
+    totalWorkouts,
+    totalDurationMinutes,
+    topBodyParts,
+    streak,
+    weeklyCount,
+    weightProgression: weightProgressionData,
+    calendarDays
+  };
+}
+
+export async function deleteWorkoutLog(id, userId) {
+  return withStateMutation(state => {
+    const index = (state.workout_logs || []).findIndex(item => item.id === id);
+    if (index < 0) {
+      return { found: false, deleted: false };
+    }
+    if (state.workout_logs[index].user_id !== userId) {
+      return { found: true, deleted: false };
+    }
+    state.workout_logs.splice(index, 1);
+    return { found: true, deleted: true };
+  });
 }

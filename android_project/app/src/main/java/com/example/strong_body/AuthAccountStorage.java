@@ -57,6 +57,18 @@ public final class AuthAccountStorage {
         return null;
     }
 
+    public static String getSessionToken(Context ctx) {
+        SavedAccount account = getAutoLoginAccount(ctx);
+        if (account != null && account.token != null && !account.token.isEmpty()) {
+            return account.token;
+        }
+        account = getMostRecentlyUsed(ctx);
+        if (account != null && account.token != null && !account.token.isEmpty()) {
+            return account.token;
+        }
+        return "";
+    }
+
     public static void saveLoginState(
             Context ctx,
             String email,

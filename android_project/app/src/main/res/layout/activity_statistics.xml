@@ -1,143 +1,373 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F5F5F7"
-    android:padding="16dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="数据中心"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="#1D1D1F"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="16dp"/>
+    android:background="@color/gymeye_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="本周总组数" android:textColor="#86868B"/>
-                <TextView android:id="@+id/tvTotalSets" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 组" android:textSize="24sp" android:textStyle="bold" android:textColor="#1D1D1F"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="连续打卡" android:textColor="#86868B"/>
-                <TextView android:id="@+id/tvStreakDays" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 天" android:textSize="24sp" android:textStyle="bold" android:textColor="#1D1D1F"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="选择器材查看趋势"
-        android:textSize="14sp"
-        android:textColor="#86868B"
-        android:layout_marginBottom="8dp"/>
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:scrollbars="none">
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupEquipment"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:singleLine="true">
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipChestPress"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="坐姿推胸"
-                android:checked="true"/>
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipLegCurl"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="坐姿腿弯举" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipLegExtension"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="坐姿腿屈伸" />
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
+            android:text="数据中心"
+            android:textSize="@dimen/gymeye_text_headline"
+            android:textStyle="bold"
+            android:textColor="@color/gymeye_text_primary"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"/>
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp">
-        <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="训练记录与趋势分析"
+            android:textSize="@dimen/gymeye_text_body"
+            android:textColor="@color/gymeye_text_secondary"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Summary Cards Grid 2x2 -->
+        <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/setsLineChart"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:layout_marginBottom="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/gymeye_surface">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="本周训练"
+                        android:textSize="@dimen/gymeye_text_caption"
+                        android:textColor="@color/gymeye_text_muted"/>
+                    <TextView
+                        android:id="@+id/tvWeeklyCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 次"
+                        android:textSize="@dimen/gymeye_text_title"
+                        android:textStyle="bold"
+                        android:textColor="@color/gymeye_text_primary"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_columnWeight="1"
+                android:layout_marginStart="6dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/gymeye_surface">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="总训练时长"
+                        android:textSize="@dimen/gymeye_text_caption"
+                        android:textColor="@color/gymeye_text_muted"/>
+                    <TextView
+                        android:id="@+id/tvTotalDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 分钟"
+                        android:textSize="@dimen/gymeye_text_title"
+                        android:textStyle="bold"
+                        android:textColor="@color/gymeye_text_primary"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/gymeye_surface">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最常练部位"
+                        android:textSize="@dimen/gymeye_text_caption"
+                        android:textColor="@color/gymeye_text_muted"/>
+                    <TextView
+                        android:id="@+id/tvTopBodyPart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textSize="@dimen/gymeye_text_title"
+                        android:textStyle="bold"
+                        android:textColor="@color/gymeye_text_primary"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_columnWeight="1"
+                android:layout_marginStart="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/gymeye_surface">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="连续打卡"
+                        android:textSize="@dimen/gymeye_text_caption"
+                        android:textColor="@color/gymeye_text_muted"/>
+                    <TextView
+                        android:id="@+id/tvStreakDays"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 天"
+                        android:textSize="@dimen/gymeye_text_title"
+                        android:textStyle="bold"
+                        android:textColor="@color/gymeye_text_primary"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </GridLayout>
+
+        <!-- Weight Progression Chart -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/gymeye_surface">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnCheckIn"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="32dp"
-        android:text="记录今日训练"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#1D1D1F" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="训练重量变化曲线"
+                    android:textSize="@dimen/gymeye_text_subtitle"
+                    android:textStyle="bold"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:layout_marginBottom="8dp"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStartNewWeek"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="16dp"
-        android:text="开启新一周 (清空数据)"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#1D1D1F"
-        app:backgroundTint="#E5E5EA"
-        app:cornerRadius="12dp"
-        app:strokeColor="#D1D1D6"
-        app:strokeWidth="1dp"/>
-</LinearLayout>
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupEquipment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:singleLine="true">
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipChestPress"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="坐姿推胸"
+                            android:checked="true"/>
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipLegCurl"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="坐姿腿弯举"/>
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipLegExtension"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="坐姿腿屈伸"/>
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/weightLineChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="8dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Training Calendar -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/gymeye_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="训练日历"
+                    android:textSize="@dimen/gymeye_text_subtitle"
+                    android:textStyle="bold"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="过去90天训练热力图"
+                    android:textSize="@dimen/gymeye_text_caption"
+                    android:textColor="@color/gymeye_text_muted"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvMonthLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/gymeye_text_label"
+                    android:textColor="@color/gymeye_text_secondary"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:id="@+id/calendarLegend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="少"
+                        android:textSize="10sp"
+                        android:textColor="@color/gymeye_text_muted"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="4dp"
+                        android:background="#E5E5EA"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="2dp"
+                        android:background="#A1D4A8"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="2dp"
+                        android:background="#5ABF60"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="2dp"
+                        android:background="#388E3C"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="2dp"
+                        android:background="#1B5E20"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="多"
+                        android:textSize="10sp"
+                        android:textColor="@color/gymeye_text_muted"/>
+                </LinearLayout>
+
+                <GridLayout
+                    android:id="@+id/calendarGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="7"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Recent Records -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/gymeye_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="最近训练记录"
+                    android:textSize="@dimen/gymeye_text_subtitle"
+                    android:textStyle="bold"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:id="@+id/recentRecordsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnCheckIn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="记录今日训练"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/gymeye_primary" />
+
+    </LinearLayout>
+</ScrollView>

@@ -19,7 +19,7 @@ public final class ApiConfig {
      * 若选 {@link BackendTarget#DEVICE_USB_REVERSE}，仅适用于<b>真机 USB</b>且已执行
      * {@code adb reverse tcp:8080 tcp:8080}；在模拟器里用 {@code 127.0.0.1} 会连到模拟器自身而非电脑，必然失败。
      */
-    public static final BackendTarget BACKEND_TARGET = BackendTarget.DEVICE_USB_REVERSE;
+    public static final BackendTarget BACKEND_TARGET = BackendTarget.EMULATOR;
 
     /**
      * 仅当 {@link #BACKEND_TARGET} 为 {@link BackendTarget#DEVICE_WIFI} 时使用：

@@ -4,6 +4,7 @@ import cors from 'cors';
 import userRouter from './routes/user.js';
 import equipmentRouter from './routes/equipment.js';
 import historyRouter from './routes/history.js';
+import workoutsRouter from './routes/workouts.js';
 import config from './config.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { pingStorage } from './store.js';
@@ -47,6 +48,7 @@ app.get('/', (_req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/equipment', equipmentRouter);
 app.use('/api/history', historyRouter);
+app.use('/api/workouts', workoutsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
