@@ -1,217 +1,427 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF5F5F5"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp">
+    android:background="@color/gymeye_background">
 
-    <TextView
-        android:id="@+id/tvBrand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
-        android:gravity="center"
-        android:text="Strong&#10;Body"
-        android:textColor="#FF000000"
-        android:textSize="42sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.example.strong_body.MosaicBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no" />
 
-    <TextView
-        android:id="@+id/tvCreateAccount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
-        android:text="Create an account"
-        android:textColor="#FF111111"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvBrand" />
+    <ScrollView
+        android:id="@+id/scrollAuthWelcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-    <TextView
-        android:id="@+id/tvSubTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Enter your email to sign up for this app"
-        android:textColor="#FF666666"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvCreateAccount" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardEmail"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="24dp"
-        app:cardBackgroundColor="#FFFFFFFF"
-        app:cardCornerRadius="12dp"
-        app:strokeColor="#FFDDDDDD"
-        app:strokeWidth="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubTitle">
-
-        <EditText
-            android:id="@+id/etEmail"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:hint="email@domain.com"
-            android:inputType="textEmailAddress"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#FF222222"
-            android:textColorHint="#FF9E9E9E"
-            android:textSize="16sp" />
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/gymeye_page_margin_horizontal"
+            android:paddingTop="@dimen/gymeye_space_32"
+            android:paddingEnd="@dimen/gymeye_page_margin_horizontal"
+            android:paddingBottom="@dimen/gymeye_space_32">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardPassword"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="12dp"
-        app:cardBackgroundColor="#FFFFFFFF"
-        app:cardCornerRadius="12dp"
-        app:strokeColor="#FFDDDDDD"
-        app:strokeWidth="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardEmail">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gymeye_card"
+                android:elevation="3dp"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_24">
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:hint="password"
-            android:inputType="textPassword"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#FF222222"
-            android:textColorHint="#FF9E9E9E"
-            android:textSize="16sp" />
-    </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/tvBrand"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="GymEye"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:textSize="@dimen/gymeye_text_display"
+                    android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnContinue"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF000000"
-        android:text="Continue"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFFFF"
-        android:textSize="18sp"
-        app:cornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardPassword" />
+                <TextView
+                    android:id="@+id/tvTagline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_4"
+                    android:gravity="center"
+                    android:text="AI 健身助手，识别器械，科学训练"
+                    android:textColor="@color/gymeye_text_secondary"
+                    android:textSize="@dimen/gymeye_text_body" />
 
-    <View
-        android:id="@+id/viewLeftLine"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="28dp"
-        android:background="#FFDADADA"
-        app:layout_constraintEnd_toStartOf="@id/tvOr"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnContinue" />
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_24"
+                    android:columnCount="3">
 
-    <TextView
-        android:id="@+id/tvOr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="or"
-        android:textColor="#FF8A8A8A"
-        android:textSize="20sp"
-        app:layout_constraintBaseline_toBaselineOf="@id/viewLeftLine"
-        app:layout_constraintEnd_toStartOf="@id/viewRightLine"
-        app:layout_constraintStart_toEndOf="@id/viewLeftLine" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_columnWeight="1"
+                        android:layout_marginEnd="@dimen/gymeye_space_8"
+                        android:background="@drawable/bg_auth_feature_card"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/gymeye_space_8">
 
-    <View
-        android:id="@+id/viewRightLine"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#FFDADADA"
-        app:layout_constraintBottom_toBottomOf="@id/viewLeftLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvOr"
-        app:layout_constraintTop_toTopOf="@id/viewLeftLine" />
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_auth_feature_icon"
+                            android:gravity="center"
+                            android:text="AI"
+                            android:textColor="@color/gymeye_on_accent"
+                            android:textSize="@dimen/gymeye_text_caption"
+                            android:textStyle="bold" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLoginQQ"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="28dp"
-        android:backgroundTint="#FFECECEC"
-        android:text="Continue with QQ"
-        android:textAllCaps="false"
-        android:textColor="#FF111111"
-        android:textSize="18sp"
-        app:cornerRadius="12dp"
-        app:icon="@android:drawable/ic_menu_gallery"
-        app:iconGravity="textStart"
-        app:iconPadding="14dp"
-        app:iconTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/viewLeftLine" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gymeye_space_8"
+                            android:gravity="center"
+                            android:text="器械识别"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLoginWechat"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="14dp"
-        android:backgroundTint="#FFECECEC"
-        android:text="Continue with WeChat"
-        android:textAllCaps="false"
-        android:textColor="#FF111111"
-        android:textSize="18sp"
-        app:cornerRadius="12dp"
-        app:icon="@android:drawable/ic_menu_gallery"
-        app:iconGravity="textStart"
-        app:iconPadding="14dp"
-        app:iconTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLoginQQ" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_columnWeight="1"
+                        android:layout_marginStart="@dimen/gymeye_space_4"
+                        android:layout_marginEnd="@dimen/gymeye_space_4"
+                        android:background="@drawable/bg_auth_feature_card"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/gymeye_space_8">
 
-    <TextView
-        android:id="@+id/btnGuestLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:padding="8dp"
-        android:text="游客登录"
-        android:textColor="#FF5F5F5F"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLoginWechat" />
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_auth_feature_icon"
+                            android:gravity="center"
+                            android:text="GO"
+                            android:textColor="@color/gymeye_on_accent"
+                            android:textSize="@dimen/gymeye_text_caption"
+                            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvTerms"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:lineSpacingExtra="2dp"
-        android:text="By clicking continue, you agree to our Terms of Service&#10;and Privacy Policy"
-        android:textColor="#FF9A9A9A"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnGuestLogin" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gymeye_space_8"
+                            android:gravity="center"
+                            android:text="动作指导"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_columnWeight="1"
+                        android:layout_marginStart="@dimen/gymeye_space_8"
+                        android:background="@drawable/bg_auth_feature_card"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/gymeye_space_8">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_auth_feature_icon"
+                            android:gravity="center"
+                            android:text="LOG"
+                            android:textColor="@color/gymeye_on_accent"
+                            android:textSize="@dimen/gymeye_text_caption"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gymeye_space_8"
+                            android:gravity="center"
+                            android:text="训练记录"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutSavedAccountsSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_20"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvSavedAccountsHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="最近登录账号"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_label"
+                        android:textStyle="bold" />
+
+                    <ScrollView
+                        android:id="@+id/svSavedAccounts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gymeye_space_8"
+                        android:fillViewport="false"
+                        android:maxHeight="144dp"
+                        android:overScrollMode="ifContentScrolls"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:id="@+id/llSavedAccounts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </ScrollView>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gymeye_button_height"
+                    android:layout_marginTop="@dimen/gymeye_space_24"
+                    android:text="登录账号"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gymeye_on_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/gymeye_primary"
+                    app:cornerRadius="@dimen/gymeye_radius_button"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSignUp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gymeye_button_height"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:text="注册新账号"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gymeye_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/gymeye_radius_button"
+                    app:strokeColor="@color/gymeye_border"
+                    app:strokeWidth="1dp" />
+
+                <TextView
+                    android:id="@+id/tvGuest"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gymeye_button_height"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:background="@drawable/bg_auth_text_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="游客体验"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/layoutRegisterPanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_20"
+                    android:background="@drawable/bg_auth_register_panel"
+                    android:orientation="vertical"
+                    android:padding="@dimen/gymeye_space_16"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvCreateAccount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="创建新账户"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_subtitle"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gymeye_space_4"
+                        android:text="注册后可保存识别记录和训练进度。"
+                        android:textColor="@color/gymeye_text_muted"
+                        android:textSize="@dimen/gymeye_text_label" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="@dimen/gymeye_space_16">
+
+                        <EditText
+                            android:id="@+id/etUsername"
+                            style="@style/LoginInputField"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/bg_gymeye_input_selector"
+                            android:gravity="center_vertical"
+                            android:inputType="textPersonName"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|top"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/gymeye_card"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:text="用户名"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="@dimen/gymeye_space_8">
+
+                        <EditText
+                            android:id="@+id/etEmail"
+                            style="@style/LoginInputField"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/bg_gymeye_input_selector"
+                            android:gravity="center_vertical"
+                            android:inputType="textEmailAddress"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|top"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/gymeye_card"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:text="邮箱"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="@dimen/gymeye_space_8">
+
+                        <EditText
+                            android:id="@+id/etPassword"
+                            style="@style/LoginInputField"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/bg_gymeye_input_selector"
+                            android:gravity="center_vertical"
+                            android:inputType="textPassword"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|top"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/gymeye_card"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:text="密码"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="@dimen/gymeye_space_8">
+
+                        <EditText
+                            android:id="@+id/etConfirm"
+                            style="@style/LoginInputField"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/bg_gymeye_input_selector"
+                            android:gravity="center_vertical"
+                            android:inputType="textPassword"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|top"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/gymeye_card"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:text="确认密码"
+                            android:textColor="@color/gymeye_text_primary"
+                            android:textSize="@dimen/gymeye_text_label" />
+                    </FrameLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRegisterSubmit"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/gymeye_button_height"
+                        android:layout_marginTop="@dimen/gymeye_space_16"
+                        android:text="完成注册"
+                        android:textAllCaps="false"
+                        android:textColor="@color/gymeye_on_primary"
+                        android:textSize="@dimen/gymeye_text_body"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/gymeye_primary"
+                        app:cornerRadius="@dimen/gymeye_radius_button"
+                        app:elevation="1dp" />
+
+                    <TextView
+                        android:id="@+id/tvCancelRegister"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/gymeye_touch_target"
+                        android:layout_marginTop="@dimen/gymeye_space_8"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="收起注册表单"
+                        android:textColor="@color/gymeye_text_secondary"
+                        android:textSize="@dimen/gymeye_text_label"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -1,10 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="gymeye_primary">#FF101418</color>
+    <color name="gymeye_primary_dark">#FF070A0D</color>
+    <color name="gymeye_primary_soft">#FF1B232B</color>
+    <color name="gymeye_on_primary">#FFFFFFFF</color>
+
+    <color name="gymeye_accent">#FF00BFA6</color>
+    <color name="gymeye_accent_dark">#FF008C7A</color>
+    <color name="gymeye_accent_blue">#FF1E88E5</color>
+    <color name="gymeye_accent_mid">#FF74DFD0</color>
+    <color name="gymeye_accent_surface">#FFE7FFF9</color>
+    <color name="gymeye_on_accent">#FF061413</color>
+
+    <color name="gymeye_background">#FFF5F7FA</color>
+    <color name="gymeye_surface">#FFFFFFFF</color>
+    <color name="gymeye_surface_variant">#FFEAF0F4</color>
+    <color name="gymeye_card">#FFFFFFFF</color>
+    <color name="gymeye_border">#FFD8E0E7</color>
+    <color name="gymeye_divider">#FFE4EAF0</color>
+
+    <color name="gymeye_text_primary">#FF111827</color>
+    <color name="gymeye_text_secondary">#FF56616D</color>
+    <color name="gymeye_text_muted">#FF8A96A3</color>
+    <color name="gymeye_text_inverse">#FFFFFFFF</color>
+
+    <color name="gymeye_success">#FF24A148</color>
+    <color name="gymeye_warning">#FFFFB020</color>
+    <color name="gymeye_error">#FFE53935</color>
+
+    <color name="gymeye_overlay">#99101418</color>
+    <color name="gymeye_overlay_strong">#CC101418</color>
+    <color name="gymeye_bottom_panel">#EE101418</color>
+
+    <color name="gymeye_night_background">#FF0B0F14</color>
+    <color name="gymeye_night_surface">#FF141A20</color>
+    <color name="gymeye_night_surface_variant">#FF1D2630</color>
+    <color name="gymeye_night_text_primary">#FFF6F8FA</color>
+    <color name="gymeye_night_text_secondary">#FFB9C3CC</color>
+
+    <color name="login_screen_bg">#FFF5F7FA</color>
+    <color name="login_text_primary">#FF111827</color>
+    <color name="login_text_muted">#FF8A96A3</color>
+    <color name="login_teal_link">#FF00BFA6</color>
 </resources>

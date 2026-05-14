@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gymeye_background">
+
+    <com.example.strong_body.MosaicBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/gymeye_page_margin_horizontal"
+            android:paddingTop="@dimen/gymeye_space_32"
+            android:paddingEnd="@dimen/gymeye_page_margin_horizontal"
+            android:paddingBottom="@dimen/gymeye_space_32">
+
+            <ImageButton
+                android:id="@+id/btnSignInBack"
+                android:layout_width="@dimen/gymeye_touch_target"
+                android:layout_height="@dimen/gymeye_touch_target"
+                android:background="@drawable/circle_button_background"
+                android:contentDescription="返回"
+                android:padding="@dimen/gymeye_space_12"
+                android:src="@drawable/ic_gymeye_arrow_back"
+                app:tint="@color/gymeye_text_inverse" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gymeye_space_20"
+                android:text="登录 GymEye"
+                android:textColor="@color/gymeye_text_primary"
+                android:textSize="@dimen/gymeye_text_headline"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gymeye_space_4"
+                android:text="继续你的训练计划"
+                android:textColor="@color/gymeye_text_secondary"
+                android:textSize="@dimen/gymeye_text_body" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gymeye_space_24"
+                android:background="@drawable/bg_gymeye_card"
+                android:elevation="3dp"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_24">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp">
+
+                    <EditText
+                        android:id="@+id/etSignInEmail"
+                        style="@style/LoginInputField"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/bg_gymeye_input_selector"
+                        android:gravity="center_vertical"
+                        android:inputType="textEmailAddress"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|top"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@color/gymeye_card"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:text="邮箱"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_label" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="@dimen/gymeye_space_8">
+
+                    <EditText
+                        android:id="@+id/etSignInPassword"
+                        style="@style/LoginInputField"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/bg_gymeye_input_selector"
+                        android:gravity="center_vertical"
+                        android:inputType="textPassword"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|top"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@color/gymeye_card"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:text="密码"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_label" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/cbRememberAccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/gymeye_touch_target"
+                        android:checked="true"
+                        android:text="记住账号"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_body" />
+
+                    <CheckBox
+                        android:id="@+id/cbAutoLogin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/gymeye_touch_target"
+                        android:text="自动登录"
+                        android:textColor="@color/gymeye_text_primary"
+                        android:textSize="@dimen/gymeye_text_body" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSignInSubmit"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gymeye_button_height"
+                    android:layout_marginTop="@dimen/gymeye_space_16"
+                    android:text="登录"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gymeye_on_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/gymeye_primary"
+                    app:cornerRadius="@dimen/gymeye_radius_button"
+                    app:elevation="2dp" />
+
+                <TextView
+                    android:id="@+id/tvBackToRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gymeye_button_height"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:background="@drawable/bg_auth_text_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="没有账号？立即注册"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -1,16 +1,18 @@
 package com.example.strong_body;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -20,23 +22,30 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScanActivity extends AppCompatActivity {
 
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
+    private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("\\((\\d+%)\\)");
+
     private PreviewView viewFinder;
     private ActivityResultLauncher<String> requestPermissionLauncher;
-    private Button btnAnalyze;
+    private MaterialButton btnAnalyze;
+    private TextView tvScanTip;
+    private TextView tvDetectedName;
+    private TextView tvConfidence;
 
-    // 👇 引入我们刚刚植入的大脑
     private YOLOv8Detector yoloDetector;
-    // 专门用来跑图像分析的后台线程，防止卡顿手机画面
     private ExecutorService cameraExecutor;
+
+    private String currentResult = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +57,15 @@ public class ScanActivity extends AppCompatActivity {
 
         viewFinder = findViewById(R.id.viewFinder);
         btnAnalyze = findViewById(R.id.btnAnalyze);
-        cameraExecutor = Executors.newSingleThreadExecutor();
+        tvScanTip = findViewById(R.id.tvScanTip);
+        tvDetectedName = findViewById(R.id.tvDetectedName);
+        tvConfidence = findViewById(R.id.tvConfidence);
+        ImageButton btnBack = findViewById(R.id.btnScanBack);
+        btnBack.setOnClickListener(v -> finish());
+        btnAnalyze.setEnabled(false);
+        btnAnalyze.setAlpha(0.62f);
 
-        // 👇 初始化我们的大脑（注意这俩名字必须和 assets 里的文件一模一样！）
+        cameraExecutor = Executors.newSingleThreadExecutor();
         yoloDetector = new YOLOv8Detector(this, "best_float32.tflite", "labels.txt");
 
         requestPermissionLauncher = registerForActivityResult(
@@ -59,6 +74,19 @@ public class ScanActivity extends AppCompatActivity {
                     if (isGranted) startCamera();
                     else Toast.makeText(this, "相机权限被拒绝", Toast.LENGTH_LONG).show();
                 });
+
+        btnAnalyze.setOnClickListener(v -> {
+            String equipmentName = extractEquipmentName(currentResult);
+
+            if (!isValidEquipmentName(equipmentName)) {
+                Toast.makeText(this, "请先扫描健身器材", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(ScanActivity.this, EquipmentDetailActivity.class);
+            intent.putExtra(EquipmentDetailActivity.EXTRA_EQUIPMENT_NAME, equipmentName);
+            startActivity(intent);
+        });
 
         if (hasCameraPermission()) startCamera();
         else requestPermissionLauncher.launch(CAMERA_PERMISSION);
@@ -75,42 +103,31 @@ public class ScanActivity extends AppCompatActivity {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
 
-                // 1. 预览功能（给用户看）
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
 
-                // 2. 👇 核心增加：图像分析功能（给模型看）
                 ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                        // 强制输出 RGBA 格式，方便转 Bitmap
                         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                        // 如果处理不过来，丢弃旧画面，只看最新的一帧
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build();
 
-                // 开始疯狂截取画面
                 imageAnalysis.setAnalyzer(cameraExecutor, imageProxy -> {
-                    // 把摄像头的帧转成 Bitmap
                     Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
                     bitmap.copyPixelsFromBuffer(imageProxy.getPlanes()[0].getBuffer());
 
-                    // 根据手机姿态旋转图片，保证模型看到的是正立的器械
                     int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
                     Bitmap rotatedBitmap = rotateBitmap(bitmap, rotationDegrees);
 
-                    // 🧠 喂给模型！获取识别结果
                     String result = yoloDetector.detect(rotatedBitmap);
+                    currentResult = result;
 
-                    // 在主线程更新 UI：把结果显示在那个按钮上
-                    runOnUiThread(() -> btnAnalyze.setText(result));
+                    runOnUiThread(() -> updateRecognitionUi(result));
 
-                    // 必须关掉这一帧，才能接收下一帧
                     imageProxy.close();
                 });
 
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
                 cameraProvider.unbindAll();
-
-                // 👇 把 preview 和 imageAnalysis 一起绑上去！
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
 
             } catch (Exception e) {
@@ -119,7 +136,6 @@ public class ScanActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-    // 旋转图片的辅助方法
     private Bitmap rotateBitmap(Bitmap source, int angle) {
         if (angle == 0) return source;
         android.graphics.Matrix matrix = new android.graphics.Matrix();
@@ -127,9 +143,44 @@ public class ScanActivity extends AppCompatActivity {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
+    private void updateRecognitionUi(String result) {
+        String equipmentName = extractEquipmentName(result);
+        if (isValidEquipmentName(equipmentName)) {
+            tvDetectedName.setText(equipmentName);
+            tvConfidence.setText("置信度 " + extractConfidence(result));
+            tvScanTip.setText("识别成功，点击查看详情");
+            btnAnalyze.setEnabled(true);
+            btnAnalyze.setAlpha(1f);
+        } else {
+            tvDetectedName.setText(TextUtils.isEmpty(result) ? "正在识别..." : result);
+            tvConfidence.setText("置信度 --");
+            tvScanTip.setText("将器械放入扫描框");
+            btnAnalyze.setEnabled(false);
+            btnAnalyze.setAlpha(0.62f);
+        }
+    }
+
+    private static String extractEquipmentName(String result) {
+        if (TextUtils.isEmpty(result)) return "";
+        return CONFIDENCE_PATTERN.matcher(result).replaceAll("").trim();
+    }
+
+    private static String extractConfidence(String result) {
+        if (TextUtils.isEmpty(result)) return "--";
+        Matcher matcher = CONFIDENCE_PATTERN.matcher(result);
+        return matcher.find() ? matcher.group(1) : "--";
+    }
+
+    private static boolean isValidEquipmentName(String equipmentName) {
+        return !TextUtils.isEmpty(equipmentName)
+                && !"正在识别...".equals(equipmentName)
+                && !equipmentName.contains("未识别")
+                && !equipmentName.contains("识别中");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cameraExecutor.shutdown(); // 退出时关掉后台线程
+        cameraExecutor.shutdown();
     }
 }
