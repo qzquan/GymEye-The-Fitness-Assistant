@@ -39,6 +39,9 @@
         <activity
             android:name=".EquipmentDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".EquipmentListActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

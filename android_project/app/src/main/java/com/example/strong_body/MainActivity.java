@@ -22,6 +22,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // 器械知识快捷入口
+        findViewById(R.id.btnEquipmentKnowledge).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, EquipmentListActivity.class);
+            startActivity(intent);
+        });
+
         // 退出登录按钮
         MaterialButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
