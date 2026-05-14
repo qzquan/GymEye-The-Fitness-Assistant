@@ -215,6 +215,7 @@
                 android:background="@drawable/bg_gymeye_card"
                 android:clickable="true"
                 android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="器械知识"
                 android:textColor="@color/gymeye_text_primary"
@@ -222,11 +223,15 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/btnTrainingRecord"
                 android:layout_width="0dp"
                 android:layout_height="86dp"
                 android:layout_columnWeight="1"
                 android:layout_marginEnd="@dimen/gymeye_space_8"
                 android:background="@drawable/bg_gymeye_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="训练记录"
                 android:textColor="@color/gymeye_text_primary"
@@ -239,6 +244,9 @@
                 android:layout_columnWeight="1"
                 android:layout_marginStart="@dimen/gymeye_space_8"
                 android:background="@drawable/bg_gymeye_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="我的收藏"
                 android:textColor="@color/gymeye_text_primary"
