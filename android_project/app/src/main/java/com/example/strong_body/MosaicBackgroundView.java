@@ -1,5 +1,6 @@
 package com.example.strong_body;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.Nullable;
 
@@ -24,11 +26,16 @@ public class MosaicBackgroundView extends View {
     private static final int SEED = 0xcafebabe;
     private static final int MAX = 5;
 
+    private static final float DRIFT_RANGE_DP = 80f;
+    private static final long DRIFT_DURATION_MS = 20000L;
+
     private final Paint tilePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final List<RectF> tileRects = new ArrayList<>();
     private float cellPx;
     private float gapPx;
     private float radiusPx;
+    private float driftOffset = 0f;
+    private ValueAnimator driftAnimator;
 
     public MosaicBackgroundView(Context context) {
         super(context);
@@ -59,7 +66,23 @@ public class MosaicBackgroundView extends View {
         cellPx = dp(11);
         gapPx = dp(2);
         radiusPx = dp(4);
-        buildTiles(w, h);
+        float extraPx = dp(DRIFT_RANGE_DP);
+        buildTiles((int) (w + extraPx * 2), h, -extraPx);
+        startDriftAnimation();
+    }
+
+    private void startDriftAnimation() {
+        float rangePx = dp(DRIFT_RANGE_DP);
+        driftAnimator = ValueAnimator.ofFloat(-rangePx, rangePx);
+        driftAnimator.setDuration(DRIFT_DURATION_MS);
+        driftAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        driftAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        driftAnimator.setInterpolator(new LinearInterpolator());
+        driftAnimator.addUpdateListener(a -> {
+            driftOffset = (float) a.getAnimatedValue();
+            invalidate();
+        });
+        driftAnimator.start();
     }
 
     private float dp(float dp) {
@@ -70,7 +93,7 @@ public class MosaicBackgroundView extends View {
         );
     }
 
-    private void buildTiles(int widthPx, int heightPx) {
+    private void buildTiles(int widthPx, int heightPx, float leftOffset) {
         tileRects.clear();
         float unit = cellPx + gapPx;
         int cols = Math.max(10, (int) Math.ceil((widthPx + gapPx) / unit));
@@ -132,12 +155,12 @@ public class MosaicBackgroundView extends View {
         }
 
         for (int[] t : tiles) {
-            tileRects.add(gridToRect(t[1], t[0], t[2], t[3]));
+            tileRects.add(gridToRect(t[1], t[0], t[2], t[3], leftOffset));
         }
     }
 
-    private RectF gridToRect(int col, int row, int cw, int ch) {
-        float left = col * (cellPx + gapPx);
+    private RectF gridToRect(int col, int row, int cw, int ch, float leftOffset) {
+        float left = col * (cellPx + gapPx) + leftOffset;
         float top = row * (cellPx + gapPx);
         float w = cw * cellPx + (cw - 1) * gapPx;
         float h = ch * cellPx + (ch - 1) * gapPx;
@@ -211,8 +234,20 @@ public class MosaicBackgroundView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(BG_COLOR);
+        canvas.save();
+        canvas.translate(driftOffset, 0);
         for (RectF r : tileRects) {
             canvas.drawRoundRect(r, radiusPx, radiusPx, tilePaint);
+        }
+        canvas.restore();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (driftAnimator != null) {
+            driftAnimator.cancel();
+            driftAnimator = null;
         }
     }
 

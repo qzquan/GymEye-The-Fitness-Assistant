@@ -28,6 +28,9 @@
             android:name=".SignInActivity"
             android:exported="false" />
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".ScanActivity"
             android:exported="false" />
         <activity
@@ -35,6 +38,9 @@
             android:exported="false" />
         <activity
             android:name=".EquipmentDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EquipmentListActivity"
             android:exported="false" />
     </application>
 

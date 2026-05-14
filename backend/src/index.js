@@ -4,10 +4,6 @@ import cors from 'cors';
 import userRouter from './routes/user.js';
 import equipmentRouter from './routes/equipment.js';
 import historyRouter from './routes/history.js';
-import bodyPartsRouter from './routes/bodyParts.js';
-import difficultyLevelsRouter from './routes/difficultyLevels.js';
-import exercisesRouter from './routes/exercises.js';
-import exerciseVideosRouter from './routes/exerciseVideos.js';
 import config from './config.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { pingStorage } from './store.js';
@@ -51,10 +47,6 @@ app.get('/', (_req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/equipment', equipmentRouter);
 app.use('/api/history', historyRouter);
-app.use('/api/body-parts', bodyPartsRouter);
-app.use('/api/difficulty-levels', difficultyLevelsRouter);
-app.use('/api/exercises', exercisesRouter);
-app.use('/api/exercise-videos', exerciseVideosRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

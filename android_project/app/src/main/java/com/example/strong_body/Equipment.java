@@ -15,10 +15,18 @@ public class Equipment {
     private List<String> secondaryMuscles; // 次要锻炼的肌肉群
     private String difficulty;              // 难度等级
     private String tips;                    // 使用技巧
+    private List<Exercise> recommendedExercises; // 推荐动作
 
     public Equipment(String id, String name, String description, String videoUrl,
                      List<String> targetMuscles, List<String> secondaryMuscles,
                      String difficulty, String tips) {
+        this(id, name, description, videoUrl, targetMuscles, secondaryMuscles,
+             difficulty, tips, null);
+    }
+
+    public Equipment(String id, String name, String description, String videoUrl,
+                     List<String> targetMuscles, List<String> secondaryMuscles,
+                     String difficulty, String tips, List<Exercise> recommendedExercises) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -27,6 +35,7 @@ public class Equipment {
         this.secondaryMuscles = secondaryMuscles;
         this.difficulty = difficulty;
         this.tips = tips;
+        this.recommendedExercises = recommendedExercises;
     }
 
     // Getter方法
@@ -38,4 +47,5 @@ public class Equipment {
     public List<String> getSecondaryMuscles() { return secondaryMuscles; }
     public String getDifficulty() { return difficulty; }
     public String getTips() { return tips; }
+    public List<Exercise> getRecommendedExercises() { return recommendedExercises; }
 }

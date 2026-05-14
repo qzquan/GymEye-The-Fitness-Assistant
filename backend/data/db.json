@@ -1,0 +1,53 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "508907966@qq.com",
+      "password_hash": "$2a$10$SBgP/ifxoCIJBd3rXdx5LOUtea0DOORXzqj2upPD/JsPmOQAEeWnG",
+      "nickname": "wbn",
+      "created_at": "2026-04-19T10:47:25.319Z"
+    },
+    {
+      "id": 2,
+      "email": "123456@qq.com",
+      "password_hash": "$2a$10$nAStB88O.Guma7FtNtciFORo9qwxyvhyOFYZ58RXkDwFPouNoVw8q",
+      "nickname": "123456",
+      "created_at": "2026-04-19T10:49:23.894Z"
+    }
+  ],
+  "equipment": [
+    {
+      "id": 1,
+      "name": "坐姿推肩",
+      "description": null,
+      "target_muscle": null,
+      "tutorial_text": null,
+      "tutorial_url": null,
+      "created_at": "2026-04-19T09:04:49.629Z"
+    },
+    {
+      "id": 2,
+      "name": "腿屈伸",
+      "description": null,
+      "target_muscle": null,
+      "tutorial_text": null,
+      "tutorial_url": null,
+      "created_at": "2026-04-19T09:04:49.629Z"
+    },
+    {
+      "id": 3,
+      "name": "腿弯曲",
+      "description": null,
+      "target_muscle": null,
+      "tutorial_text": null,
+      "tutorial_url": null,
+      "created_at": "2026-04-19T09:04:49.629Z"
+    }
+  ],
+  "history": [],
+  "counters": {
+    "users": 2,
+    "equipment": 3,
+    "history": 0
+  }
+}
