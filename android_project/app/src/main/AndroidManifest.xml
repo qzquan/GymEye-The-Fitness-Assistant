@@ -15,21 +15,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Strong_body"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ScanActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+
+        <activity android:name=".SignInActivity" android:exported="false" />
+        <activity android:name=".RegisterActivity" android:exported="false" />
+        <activity android:name=".ScanActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".EquipmentDetailActivity" android:exported="false" />
+        <activity android:name=".EquipmentListActivity" android:exported="false" />
+
+        <activity android:name=".StatisticsActivity" android:exported="false" />
+
     </application>
 
 </manifest>
