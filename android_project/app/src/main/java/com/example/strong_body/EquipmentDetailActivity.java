@@ -23,6 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +46,7 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     private TextView tvTips;
     private TextView tvPrimaryMuscles;
     private TextView tvSecondaryMuscles;
+    private TextView tvVideoPlaceholder;
     private ScrollView scrollView;
 
     private RecyclerView rvRecommendedExercises;
@@ -97,6 +101,7 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvTips = findViewById(R.id.tvTips);
         tvPrimaryMuscles = findViewById(R.id.tvPrimaryMuscles);
         tvSecondaryMuscles = findViewById(R.id.tvSecondaryMuscles);
+        tvVideoPlaceholder = findViewById(R.id.tvVideoPlaceholder);
         scrollView = findViewById(R.id.scrollView);
 
         rvRecommendedExercises = findViewById(R.id.rvRecommendedExercises);
@@ -162,13 +167,12 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     }
 
     private void setupVideoPlayer(Equipment equipment) {
-        // 设置视频URL（这里使用示例URL，实际项目中需要替换为真实视频URL）
-        String videoUrl = equipment.getVideoUrl();
+        Uri videoUri = resolveVideoUri(equipment);
 
-        // 检查是否是有效的视频URL
-        if (videoUrl != null && !videoUrl.startsWith("https://example.com")) {
+        if (videoUri != null) {
             try {
-                videoView.setVideoURI(Uri.parse(videoUrl));
+                showVideoLoading();
+                videoView.setVideoURI(videoUri);
 
                 // 添加播放控制
                 MediaController mediaController = new MediaController(this);
@@ -178,32 +182,77 @@ public class EquipmentDetailActivity extends AppCompatActivity {
                 // 视频准备完成回调
                 videoView.setOnPreparedListener(mp -> {
                     mp.setLooping(false);
-                    // 自动播放
-                    // videoView.start();
+                    hideVideoPlaceholder();
+                    videoView.start();
                 });
 
                 // 视频播放错误处理
                 videoView.setOnErrorListener((mp, what, extra) -> {
-                    // 显示错误提示或使用本地占位图
-                    showVideoPlaceholder();
+                    showVideoError();
                     return true;
                 });
 
             } catch (Exception e) {
-                showVideoPlaceholder();
+                showVideoError();
             }
         } else {
-            // 示例URL或无效URL，显示占位图
-            showVideoPlaceholder();
+            showVideoUnavailable();
         }
     }
 
-    private void showVideoPlaceholder() {
-        // 视频不可用时显示占位提示
-        TextView placeholder = findViewById(R.id.tvVideoPlaceholder);
-        if (placeholder != null) {
-            placeholder.setVisibility(View.VISIBLE);
-            placeholder.setText("视频加载中...\n请稍后");
+    private Uri resolveVideoUri(Equipment equipment) {
+        if ("leg_extension".equals(equipment.getId())) {
+            return copyRawVideoToCache();
+        }
+
+        String videoUrl = equipment.getVideoUrl();
+        if (videoUrl != null && !videoUrl.startsWith("https://example.com")) {
+            return Uri.parse(videoUrl);
+        }
+        return null;
+    }
+
+    private Uri copyRawVideoToCache() {
+        File outFile = new File(getCacheDir(), "leg_extension_demo.mp4");
+        if (!outFile.exists() || outFile.length() == 0) {
+            try (InputStream input = getResources().openRawResource(R.raw.leg_extension_demo);
+                 FileOutputStream output = new FileOutputStream(outFile)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, read);
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return Uri.fromFile(outFile);
+    }
+
+    private void showVideoLoading() {
+        if (tvVideoPlaceholder != null) {
+            tvVideoPlaceholder.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setText("视频加载中...\n请稍后");
+        }
+    }
+
+    private void showVideoUnavailable() {
+        if (tvVideoPlaceholder != null) {
+            tvVideoPlaceholder.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setText("暂无教学视频");
+        }
+    }
+
+    private void showVideoError() {
+        if (tvVideoPlaceholder != null) {
+            tvVideoPlaceholder.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setText("视频加载失败\n请检查网络后重试");
+        }
+    }
+
+    private void hideVideoPlaceholder() {
+        if (tvVideoPlaceholder != null) {
+            tvVideoPlaceholder.setVisibility(View.GONE);
         }
     }
 

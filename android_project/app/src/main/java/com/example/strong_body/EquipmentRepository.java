@@ -87,7 +87,7 @@ public class EquipmentRepository {
             "leg_extension",
             "腿屈伸",
             "腿屈伸器械专门针对股四头肌，是孤立训练大腿前侧的最佳选择。",
-            "https://example.com/videos/leg_extension.mp4",
+            "https://www.cdc.gov/physicalactivity/videos/Leg_extension_Ipod-Lg.mp4",
             Arrays.asList("quadriceps"),
             Arrays.asList("abs"),
             "初级",
