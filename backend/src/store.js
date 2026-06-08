@@ -17,11 +17,13 @@ const defaultState = {
   equipment: [],
   history: [],
   workout_logs: [],
+  exercise_videos: [],
   counters: {
     users: 0,
     equipment: 0,
     history: 0,
-    workout_logs: 0
+    workout_logs: 0,
+    exercise_videos: 0
   }
 };
 
@@ -96,7 +98,7 @@ async function normalizeState(state) {
     }
   };
 
-  for (const key of ['users', 'equipment', 'history', 'workout_logs']) {
+  for (const key of ['users', 'equipment', 'history', 'workout_logs', 'exercise_videos']) {
     if (!Array.isArray(normalized[key])) {
       normalized[key] = [];
       changed = true;
@@ -111,7 +113,8 @@ async function normalizeState(state) {
     users: maxId(normalized.users),
     equipment: maxId(normalized.equipment),
     history: maxId(normalized.history),
-    workout_logs: maxId(normalized.workout_logs || [])
+    workout_logs: maxId(normalized.workout_logs || []),
+    exercise_videos: maxId(normalized.exercise_videos || [])
   };
   for (const [key, value] of Object.entries(counterTargets)) {
     if (!Number.isInteger(normalized.counters[key]) || normalized.counters[key] < value) {
@@ -531,5 +534,56 @@ export async function deleteWorkoutLog(id, userId) {
     }
     state.workout_logs.splice(index, 1);
     return { found: true, deleted: true };
+  });
+}
+
+/* ── Exercise Videos ─────────────────────────────────────── */
+
+export async function listExerciseVideos(exerciseId) {
+  const state = await readState();
+  const rows = (state.exercise_videos || [])
+    .filter(item => item.exercise_id === exerciseId);
+  return clone(rows);
+}
+
+export async function getExerciseVideoById(id) {
+  const state = await readState();
+  return clone((state.exercise_videos || []).find(item => item.id === id) || null);
+}
+
+export async function createExerciseVideo(data) {
+  return withStateMutation(state => {
+    if (!Array.isArray(state.exercise_videos)) {
+      state.exercise_videos = [];
+    }
+    const id = nextId(state, 'exercise_videos');
+    const record = {
+      id,
+      exercise_id: data.exercise_id,
+      title: data.title,
+      url: data.url,
+      duration: data.duration ?? null,
+      created_at: new Date().toISOString()
+    };
+    state.exercise_videos.push(record);
+    return clone(record);
+  });
+}
+
+export async function updateExerciseVideo(id, patch) {
+  return withStateMutation(state => {
+    const videos = state.exercise_videos || [];
+    const index = videos.findIndex(item => item.id === id);
+    if (index < 0) return null;
+    videos[index] = { ...videos[index], ...patch };
+    return clone(videos[index]);
+  });
+}
+
+export async function deleteExerciseVideo(id) {
+  return withStateMutation(state => {
+    const before = (state.exercise_videos || []).length;
+    state.exercise_videos = (state.exercise_videos || []).filter(item => item.id !== id);
+    return (state.exercise_videos || []).length !== before;
   });
 }

@@ -16,17 +16,26 @@ public class Equipment {
     private String difficulty;              // 难度等级
     private String tips;                    // 使用技巧
     private List<Exercise> recommendedExercises; // 推荐动作
+    private int backendId;                  // 后端数据库对应的数字ID
 
     public Equipment(String id, String name, String description, String videoUrl,
                      List<String> targetMuscles, List<String> secondaryMuscles,
                      String difficulty, String tips) {
         this(id, name, description, videoUrl, targetMuscles, secondaryMuscles,
-             difficulty, tips, null);
+             difficulty, tips, null, 0);
     }
 
     public Equipment(String id, String name, String description, String videoUrl,
                      List<String> targetMuscles, List<String> secondaryMuscles,
                      String difficulty, String tips, List<Exercise> recommendedExercises) {
+        this(id, name, description, videoUrl, targetMuscles, secondaryMuscles,
+             difficulty, tips, recommendedExercises, 0);
+    }
+
+    public Equipment(String id, String name, String description, String videoUrl,
+                     List<String> targetMuscles, List<String> secondaryMuscles,
+                     String difficulty, String tips, List<Exercise> recommendedExercises,
+                     int backendId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -36,6 +45,7 @@ public class Equipment {
         this.difficulty = difficulty;
         this.tips = tips;
         this.recommendedExercises = recommendedExercises;
+        this.backendId = backendId;
     }
 
     // Getter方法
@@ -48,4 +58,5 @@ public class Equipment {
     public String getDifficulty() { return difficulty; }
     public String getTips() { return tips; }
     public List<Exercise> getRecommendedExercises() { return recommendedExercises; }
+    public int getBackendId() { return backendId; }
 }
