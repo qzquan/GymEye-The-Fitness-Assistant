@@ -1,14 +1,13 @@
 package com.example.strong_body;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ScrollView;
@@ -23,9 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 器材详情页面
@@ -35,14 +32,21 @@ public class EquipmentDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_EQUIPMENT_NAME = "equipment_name";
 
-    private MuscleView muscleView;
     private VideoView videoView;
+    private ImageView ivVideoCover;
+    private ImageView ivCoverThumb;
+    private ImageView ivAnatomyThumb;
+    private ImageView ivAnatomyLarge;
     private TextView tvEquipmentName;
     private TextView tvDescription;
     private TextView tvDifficulty;
     private TextView tvTips;
     private TextView tvPrimaryMuscles;
     private TextView tvSecondaryMuscles;
+    private TextView tvVideoPlaceholder;
+    private TextView tvCoverThumbPlaceholder;
+    private TextView tvAnatomyThumbPlaceholder;
+    private TextView tvAnatomyPlaceholder;
     private ScrollView scrollView;
 
     private RecyclerView rvRecommendedExercises;
@@ -83,20 +87,27 @@ public class EquipmentDetailActivity extends AppCompatActivity {
 
         initViews();
         bindData(equipment);
+        setupMediaImages(equipment);
         setupVideoPlayer(equipment);
-        setupMuscleDiagram(equipment);
         setupRecommendedExercises(equipment);
     }
 
     private void initViews() {
-        muscleView = findViewById(R.id.muscleView);
         videoView = findViewById(R.id.videoView);
+        ivVideoCover = findViewById(R.id.ivVideoCover);
+        ivCoverThumb = findViewById(R.id.ivCoverThumb);
+        ivAnatomyThumb = findViewById(R.id.ivAnatomyThumb);
+        ivAnatomyLarge = findViewById(R.id.ivAnatomyLarge);
         tvEquipmentName = findViewById(R.id.tvEquipmentName);
         tvDescription = findViewById(R.id.tvDescription);
         tvDifficulty = findViewById(R.id.tvDifficulty);
         tvTips = findViewById(R.id.tvTips);
         tvPrimaryMuscles = findViewById(R.id.tvPrimaryMuscles);
         tvSecondaryMuscles = findViewById(R.id.tvSecondaryMuscles);
+        tvVideoPlaceholder = findViewById(R.id.tvVideoPlaceholder);
+        tvCoverThumbPlaceholder = findViewById(R.id.tvCoverThumbPlaceholder);
+        tvAnatomyThumbPlaceholder = findViewById(R.id.tvAnatomyThumbPlaceholder);
+        tvAnatomyPlaceholder = findViewById(R.id.tvAnatomyPlaceholder);
         scrollView = findViewById(R.id.scrollView);
 
         rvRecommendedExercises = findViewById(R.id.rvRecommendedExercises);
@@ -129,7 +140,7 @@ public class EquipmentDetailActivity extends AppCompatActivity {
 
         // 设置提示文本
         String tipsText = equipment.getTips();
-        tvTips.setText("使用技巧\n" + tipsText);
+        tvTips.setText(tipsText);
 
         // 显示主要肌肉群
         List<String> primaryMuscles = equipment.getTargetMuscles();
@@ -169,6 +180,9 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         if (videoUrl != null && !videoUrl.startsWith("https://example.com")) {
             try {
                 videoView.setVideoURI(Uri.parse(videoUrl));
+                videoView.setVisibility(View.VISIBLE);
+                ivVideoCover.setVisibility(View.GONE);
+                tvVideoPlaceholder.setVisibility(View.GONE);
 
                 // 添加播放控制
                 MediaController mediaController = new MediaController(this);
@@ -185,25 +199,68 @@ public class EquipmentDetailActivity extends AppCompatActivity {
                 // 视频播放错误处理
                 videoView.setOnErrorListener((mp, what, extra) -> {
                     // 显示错误提示或使用本地占位图
-                    showVideoPlaceholder();
+                    showVideoPlaceholder(equipment);
                     return true;
                 });
 
             } catch (Exception e) {
-                showVideoPlaceholder();
+                showVideoPlaceholder(equipment);
             }
         } else {
             // 示例URL或无效URL，显示占位图
-            showVideoPlaceholder();
+            showVideoPlaceholder(equipment);
         }
     }
 
-    private void showVideoPlaceholder() {
-        // 视频不可用时显示占位提示
-        TextView placeholder = findViewById(R.id.tvVideoPlaceholder);
-        if (placeholder != null) {
+    private void setupMediaImages(Equipment equipment) {
+        int coverResId = EquipmentImageResolver.getCoverResId(this, equipment);
+        int anatomyResId = EquipmentImageResolver.getAnatomyResId(this, equipment);
+
+        showImageOrPlaceholder(
+                ivCoverThumb,
+                tvCoverThumbPlaceholder,
+                coverResId,
+                equipment.getName() + "\n封面待补充"
+        );
+        showImageOrPlaceholder(
+                ivAnatomyThumb,
+                tvAnatomyThumbPlaceholder,
+                anatomyResId,
+                equipment.getName() + "\n解剖图待补充"
+        );
+        showImageOrPlaceholder(
+                ivAnatomyLarge,
+                tvAnatomyPlaceholder,
+                anatomyResId,
+                "请将 " + equipment.getName() + " 的彩色肌肉解剖图放入 drawable-nodpi"
+        );
+    }
+
+    private void showVideoPlaceholder(Equipment equipment) {
+        int coverResId = EquipmentImageResolver.getCoverResId(this, equipment);
+        videoView.setVisibility(View.GONE);
+        if (coverResId != 0) {
+            ivVideoCover.setImageResource(coverResId);
+            ivVideoCover.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setVisibility(View.GONE);
+        } else {
+            ivVideoCover.setImageDrawable(null);
+            ivVideoCover.setVisibility(View.GONE);
+            tvVideoPlaceholder.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setText(equipment.getName() + "\n动作视频和封面待补充");
+        }
+    }
+
+    private void showImageOrPlaceholder(ImageView imageView, TextView placeholder, int resId, String text) {
+        if (resId != 0) {
+            imageView.setImageResource(resId);
+            imageView.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            imageView.setImageDrawable(null);
+            imageView.setVisibility(View.GONE);
             placeholder.setVisibility(View.VISIBLE);
-            placeholder.setText("视频加载中...\n请稍后");
+            placeholder.setText(text);
         }
     }
 
@@ -309,18 +366,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             case "康复": return 0xFFC62828;
             default: return 0xFF333333;
         }
-    }
-
-    private void setupMuscleDiagram(Equipment equipment) {
-        // 将英文肌肉名称转换为肌肉图识别的格式
-        Set<String> primarySet = new HashSet<>(equipment.getTargetMuscles());
-        Set<String> secondarySet = new HashSet<>();
-        if (equipment.getSecondaryMuscles() != null) {
-            secondarySet = new HashSet<>(equipment.getSecondaryMuscles());
-        }
-
-        // 设置肌肉高亮
-        muscleView.setMuscles(primarySet, secondarySet);
     }
 
     @Override
