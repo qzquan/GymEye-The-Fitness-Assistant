@@ -1,14 +1,13 @@
 package com.example.strong_body;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ScrollView;
@@ -29,22 +28,21 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * 器材详情页面
- * 显示教学视频和肌肉发力图
+ * 显示教学视频、器材图片和肌肉解剖图
  */
 public class EquipmentDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_EQUIPMENT_NAME = "equipment_name";
 
-    private MuscleView muscleView;
     private VideoView videoView;
+    private ImageView ivVideoCover;
+    private ImageView ivAnatomyLarge;
     private TextView tvEquipmentName;
     private TextView tvDescription;
     private TextView tvDifficulty;
@@ -52,6 +50,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     private TextView tvPrimaryMuscles;
     private TextView tvSecondaryMuscles;
     private TextView tvVideoPlaceholder;
+    private TextView tvAnatomyPlaceholder;
+    private TextView tvAnatomyMuscleSummary;
     private ScrollView scrollView;
 
     private RecyclerView rvRecommendedExercises;
@@ -69,7 +69,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 全屏沉浸式
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -77,16 +76,13 @@ public class EquipmentDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_equipment_detail);
 
-        // 获取传递的器材名称
         Intent intent = getIntent();
         String equipmentName = intent.getStringExtra(EXTRA_EQUIPMENT_NAME);
-
         if (equipmentName == null) {
             finish();
             return;
         }
 
-        // 获取器材数据
         currentEquipment = EquipmentRepository.getEquipmentByName(equipmentName);
         if (currentEquipment == null) {
             finish();
@@ -96,14 +92,15 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         networkExecutor = Executors.newSingleThreadExecutor();
         initViews();
         bindData(currentEquipment);
+        setupMediaImages(currentEquipment);
         setupVideoPlayer(currentEquipment);
-        setupMuscleDiagram(currentEquipment);
         setupRecommendedExercises(currentEquipment);
     }
 
     private void initViews() {
-        muscleView = findViewById(R.id.muscleView);
         videoView = findViewById(R.id.videoView);
+        ivVideoCover = findViewById(R.id.ivVideoCover);
+        ivAnatomyLarge = findViewById(R.id.ivAnatomyLarge);
         tvEquipmentName = findViewById(R.id.tvEquipmentName);
         tvDescription = findViewById(R.id.tvDescription);
         tvDifficulty = findViewById(R.id.tvDifficulty);
@@ -111,6 +108,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvPrimaryMuscles = findViewById(R.id.tvPrimaryMuscles);
         tvSecondaryMuscles = findViewById(R.id.tvSecondaryMuscles);
         tvVideoPlaceholder = findViewById(R.id.tvVideoPlaceholder);
+        tvAnatomyPlaceholder = findViewById(R.id.tvAnatomyPlaceholder);
+        tvAnatomyMuscleSummary = findViewById(R.id.tvAnatomyMuscleSummary);
         scrollView = findViewById(R.id.scrollView);
 
         rvRecommendedExercises = findViewById(R.id.rvRecommendedExercises);
@@ -121,18 +120,13 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvSafetyTips = findViewById(R.id.tvSafetyTips);
         chipGroupSuitableFor = findViewById(R.id.chipGroupSuitableFor);
 
-        // 返回按钮
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-
-        // 重新播放按钮
         findViewById(R.id.btnReplay).setOnClickListener(v -> {
             if (videoView != null) {
                 videoView.seekTo(0);
                 videoView.start();
             }
         });
-
-        // 关闭动作详情
         findViewById(R.id.btnCloseDetail).setOnClickListener(v -> hideExerciseDetail());
     }
 
@@ -140,12 +134,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvEquipmentName.setText(equipment.getName());
         tvDescription.setText(equipment.getDescription());
         tvDifficulty.setText("难度: " + equipment.getDifficulty());
+        tvTips.setText(equipment.getTips());
 
-        // 设置提示文本
-        String tipsText = equipment.getTips();
-        tvTips.setText("使用技巧\n" + tipsText);
-
-        // 显示主要肌肉群
         List<String> primaryMuscles = equipment.getTargetMuscles();
         StringBuilder primaryBuilder = new StringBuilder("主要锻炼: ");
         for (int i = 0; i < primaryMuscles.size(); i++) {
@@ -157,8 +147,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         }
         tvPrimaryMuscles.setText(primaryBuilder.toString());
 
-        // 显示次要肌肉群
         List<String> secondaryMuscles = equipment.getSecondaryMuscles();
+        String secondaryText = "";
         if (secondaryMuscles != null && !secondaryMuscles.isEmpty()) {
             StringBuilder secondaryBuilder = new StringBuilder("辅助锻炼: ");
             for (int i = 0; i < secondaryMuscles.size(); i++) {
@@ -168,24 +158,49 @@ public class EquipmentDetailActivity extends AppCompatActivity {
                     secondaryBuilder.append("、");
                 }
             }
-            tvSecondaryMuscles.setText(secondaryBuilder.toString());
+            secondaryText = secondaryBuilder.toString();
+            tvSecondaryMuscles.setText(secondaryText);
             tvSecondaryMuscles.setVisibility(View.VISIBLE);
         } else {
             tvSecondaryMuscles.setVisibility(View.GONE);
         }
+
+        String anatomySummary = secondaryText.isEmpty()
+                ? primaryBuilder.toString()
+                : primaryBuilder + "\n" + secondaryText;
+        tvAnatomyMuscleSummary.setText(anatomySummary);
     }
 
-    /* ── 视频播放 ──────────────────────────────────────────── */
+    private void setupMediaImages(Equipment equipment) {
+        int anatomyResId = EquipmentImageResolver.getAnatomyResId(this, equipment);
+        showImageOrPlaceholder(
+                ivAnatomyLarge,
+                tvAnatomyPlaceholder,
+                anatomyResId,
+                "请将 " + equipment.getName() + " 的彩色肌肉解剖图放入 drawable-nodpi"
+        );
+    }
+
+    private void showImageOrPlaceholder(ImageView imageView, TextView placeholder, int resId, String text) {
+        if (resId != 0) {
+            imageView.setImageResource(resId);
+            imageView.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            imageView.setImageDrawable(null);
+            imageView.setVisibility(View.GONE);
+            placeholder.setVisibility(View.VISIBLE);
+            placeholder.setText(text);
+        }
+    }
 
     private void setupVideoPlayer(Equipment equipment) {
-        // 1. 先尝试本地资源
         Uri localUri = resolveVideoUri(equipment);
         if (localUri != null) {
             playVideo(localUri);
             return;
         }
 
-        // 2. 再尝试后端 API 获取视频 URL
         if (equipment.getBackendId() > 0) {
             fetchAndPlayBackendVideo(equipment);
         } else {
@@ -193,32 +208,22 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 解析本地视频资源：动态查找 res/raw/<equipmentId>_demo.mp4
-     */
     private Uri resolveVideoUri(Equipment equipment) {
-        // 尝试 raw 资源
         Uri rawUri = tryRawResource(equipment.getId());
         if (rawUri != null) return rawUri;
 
-        // 检查 equipment 的 videoUrl 是否为有效非占位符 URL
         String videoUrl = equipment.getVideoUrl();
         if (videoUrl != null && !videoUrl.isEmpty()
                 && !videoUrl.startsWith("https://example.com")) {
             return Uri.parse(videoUrl);
         }
-
         return null;
     }
 
-    /**
-     * 动态查找 res/raw/<equipmentId>_demo 资源并复制到缓存
-     * 支持任意器械，无需硬编码
-     */
     private Uri tryRawResource(String equipmentId) {
         String resourceName = equipmentId + "_demo";
         int resId = getResources().getIdentifier(resourceName, "raw", getPackageName());
-        if (resId == 0) return null;  // 没有对应的 raw 资源
+        if (resId == 0) return null;
 
         File outFile = new File(getCacheDir(), resourceName + ".mp4");
         if (!outFile.exists() || outFile.length() == 0) {
@@ -236,9 +241,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         return Uri.fromFile(outFile);
     }
 
-    /**
-     * 从后端 API 异步获取视频 URL 并播放
-     */
     private void fetchAndPlayBackendVideo(Equipment equipment) {
         showVideoLoading();
         int backendId = equipment.getBackendId();
@@ -272,25 +274,23 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         try {
             showVideoLoading();
             videoView.setVideoURI(videoUri);
+            videoView.setVisibility(View.VISIBLE);
+            ivVideoCover.setVisibility(View.GONE);
 
-            // 添加播放控制
             MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(videoView);
             videoView.setMediaController(mediaController);
 
-            // 视频准备完成回调
             videoView.setOnPreparedListener(mp -> {
                 mp.setLooping(false);
                 hideVideoPlaceholder();
                 videoView.start();
             });
 
-            // 视频播放错误处理
             videoView.setOnErrorListener((mp, what, extra) -> {
                 showVideoError();
                 return true;
             });
-
         } catch (Exception e) {
             showVideoError();
         }
@@ -304,16 +304,27 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     }
 
     private void showVideoUnavailable() {
-        if (tvVideoPlaceholder != null) {
-            tvVideoPlaceholder.setVisibility(View.VISIBLE);
-            tvVideoPlaceholder.setText("暂无教学视频");
-        }
+        showVideoFallback("暂无教学视频");
     }
 
     private void showVideoError() {
-        if (tvVideoPlaceholder != null) {
+        showVideoFallback("视频加载失败\n请检查网络后重试");
+    }
+
+    private void showVideoFallback(String message) {
+        if (videoView != null) {
+            videoView.setVisibility(View.GONE);
+        }
+        int coverResId = EquipmentImageResolver.getCoverResId(this, currentEquipment);
+        if (coverResId != 0) {
+            ivVideoCover.setImageResource(coverResId);
+            ivVideoCover.setVisibility(View.VISIBLE);
+            tvVideoPlaceholder.setVisibility(View.GONE);
+        } else if (tvVideoPlaceholder != null) {
+            ivVideoCover.setImageDrawable(null);
+            ivVideoCover.setVisibility(View.GONE);
             tvVideoPlaceholder.setVisibility(View.VISIBLE);
-            tvVideoPlaceholder.setText("视频加载失败\n请检查网络后重试");
+            tvVideoPlaceholder.setText(currentEquipment.getName() + "\n" + message + "\n封面待补充");
         }
     }
 
@@ -322,8 +333,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             tvVideoPlaceholder.setVisibility(View.GONE);
         }
     }
-
-    /* ── 推荐动作 ──────────────────────────────────────────── */
 
     private void setupRecommendedExercises(Equipment equipment) {
         List<Exercise> exercises = equipment.getRecommendedExercises();
@@ -338,7 +347,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         ExerciseCardAdapter adapter = new ExerciseCardAdapter(exercises);
         adapter.setOnExerciseClickListener((exercise, position) -> {
             showExerciseDetail(exercise);
-            // 滚动到详情区
             scrollView.post(() -> scrollView.smoothScrollTo(0, layoutExerciseDetail.getTop()));
         });
         rvRecommendedExercises.setAdapter(adapter);
@@ -348,12 +356,10 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         layoutExerciseDetail.setVisibility(View.VISIBLE);
         tvDetailExerciseName.setText(exercise.getName());
 
-        // 清空旧内容
         layoutSteps.removeAllViews();
         layoutMistakes.removeAllViews();
         chipGroupSuitableFor.removeAllViews();
 
-        // 动作步骤
         List<String> steps = exercise.getSteps();
         if (steps != null) {
             for (int i = 0; i < steps.size(); i++) {
@@ -371,7 +377,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             }
         }
 
-        // 常见错误
         List<String> mistakes = exercise.getCommonMistakes();
         if (mistakes != null) {
             for (String mistake : mistakes) {
@@ -388,10 +393,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             }
         }
 
-        // 安全提示
         tvSafetyTips.setText(exercise.getSafetyTips());
 
-        // 适合人群 Chip
         List<String> suitableFor = exercise.getSuitableFor();
         if (suitableFor != null) {
             for (String tag : suitableFor) {
@@ -429,26 +432,9 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         }
     }
 
-    /* ── 肌肉图 ────────────────────────────────────────────── */
-
-    private void setupMuscleDiagram(Equipment equipment) {
-        // 将英文肌肉名称转换为肌肉图识别的格式
-        Set<String> primarySet = new HashSet<>(equipment.getTargetMuscles());
-        Set<String> secondarySet = new HashSet<>();
-        if (equipment.getSecondaryMuscles() != null) {
-            secondarySet = new HashSet<>(equipment.getSecondaryMuscles());
-        }
-
-        // 设置肌肉高亮
-        muscleView.setMuscles(primarySet, secondarySet);
-    }
-
-    /* ── 生命周期 ──────────────────────────────────────────── */
-
     @Override
     protected void onPause() {
         super.onPause();
-        // 暂停视频
         if (videoView != null && videoView.isPlaying()) {
             videoView.pause();
         }
@@ -457,11 +443,9 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 释放视频资源
         if (videoView != null) {
             videoView.stopPlayback();
         }
-        // 关闭网络线程
         if (networkExecutor != null) {
             networkExecutor.shutdownNow();
         }
