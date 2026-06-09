@@ -16,6 +16,13 @@ public class Exercise {
     public Exercise(String id, String name, String description, List<String> steps,
                     List<String> commonMistakes, String safetyTips,
                     List<String> suitableFor, String difficulty) {
+        this(id, name, description, steps, commonMistakes, safetyTips,
+             suitableFor, difficulty, null);
+    }
+
+    public Exercise(String id, String name, String description, List<String> steps,
+                    List<String> commonMistakes, String safetyTips,
+                    List<String> suitableFor, String difficulty, String videoUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,6 +31,7 @@ public class Exercise {
         this.safetyTips = safetyTips;
         this.suitableFor = suitableFor;
         this.difficulty = difficulty;
+        this.videoUrl = videoUrl;
     }
 
     public String getId() { return id; }

@@ -29,7 +29,7 @@ public class EquipmentRepository {
     private static final Map<String, Equipment> EQUIPMENT_DATABASE = new HashMap<>();
 
     static {
-        // 倒蹬机
+        // 倒蹬机（后端暂无对应记录，backendId=0）
         EQUIPMENT_DATABASE.put("倒蹬机", new Equipment(
             "leg_press",
             "倒蹬机",
@@ -55,10 +55,11 @@ public class EquipmentRepository {
                     Arrays.asList("脚尖方向与膝盖不一致", "骨盆晃动"),
                     "柔韧性不足者不要勉强大幅下放",
                     Arrays.asList("进阶"), "中级")
-            )
+            ),
+            0  // 后端暂无对应记录
         ));
 
-        // 坐姿推肩
+        // 坐姿推肩（后端 equipment id=1）
         EQUIPMENT_DATABASE.put("坐姿推肩", new Equipment(
             "shoulder_press",
             "坐姿推肩",
@@ -79,15 +80,16 @@ public class EquipmentRepository {
                     Arrays.asList("身体向一侧倾斜", "借助惯性甩起"),
                     "建议先掌握标准推肩后再尝试单侧训练",
                     Arrays.asList("进阶"), "中级")
-            )
+            ),
+            1  // 后端 equipment id=1
         ));
 
-        // 腿屈伸
+        // 腿屈伸（后端 equipment id=2）
         EQUIPMENT_DATABASE.put("腿屈伸", new Equipment(
             "leg_extension",
             "腿屈伸",
             "腿屈伸器械专门针对股四头肌，是孤立训练大腿前侧的最佳选择。",
-            "https://example.com/videos/leg_extension.mp4",
+            "https://www.cdc.gov/physicalactivity/videos/Leg_extension_Ipod-Lg.mp4",
             Arrays.asList("quadriceps"),
             Arrays.asList("abs"),
             "初级",
@@ -103,10 +105,11 @@ public class EquipmentRepository {
                     Arrays.asList("身体扭转借力", "速度过快"),
                     "重量应比双腿时适当降低",
                     Arrays.asList("进阶", "康复"), "初级")
-            )
+            ),
+            2  // 后端 equipment id=2
         ));
 
-        // 腿弯曲
+        // 腿弯曲（后端 equipment id=3）
         EQUIPMENT_DATABASE.put("腿弯曲", new Equipment(
             "leg_curl",
             "腿弯曲",
@@ -127,7 +130,8 @@ public class EquipmentRepository {
                     Arrays.asList("骨盆歪斜", "借助惯性"),
                     "重量应适当降低，注重动作质量",
                     Arrays.asList("进阶"), "中级")
-            )
+            ),
+            3  // 后端 equipment id=3
         ));
     }
 

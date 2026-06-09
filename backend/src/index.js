@@ -5,6 +5,7 @@ import userRouter from './routes/user.js';
 import equipmentRouter from './routes/equipment.js';
 import historyRouter from './routes/history.js';
 import workoutsRouter from './routes/workouts.js';
+import exerciseVideosRouter from './routes/exerciseVideos.js';
 import config from './config.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { pingStorage } from './store.js';
@@ -49,6 +50,7 @@ app.use('/api/user', userRouter);
 app.use('/api/equipment', equipmentRouter);
 app.use('/api/history', historyRouter);
 app.use('/api/workouts', workoutsRouter);
+app.use('/api/exercise-videos', exerciseVideosRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
