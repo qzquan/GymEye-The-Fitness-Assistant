@@ -42,8 +42,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
 
     private VideoView videoView;
     private ImageView ivVideoCover;
-    private ImageView ivCoverThumb;
-    private ImageView ivAnatomyThumb;
     private ImageView ivAnatomyLarge;
     private TextView tvEquipmentName;
     private TextView tvDescription;
@@ -52,9 +50,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     private TextView tvPrimaryMuscles;
     private TextView tvSecondaryMuscles;
     private TextView tvVideoPlaceholder;
-    private TextView tvCoverThumbPlaceholder;
-    private TextView tvAnatomyThumbPlaceholder;
     private TextView tvAnatomyPlaceholder;
+    private TextView tvAnatomyMuscleSummary;
     private ScrollView scrollView;
 
     private RecyclerView rvRecommendedExercises;
@@ -103,8 +100,6 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     private void initViews() {
         videoView = findViewById(R.id.videoView);
         ivVideoCover = findViewById(R.id.ivVideoCover);
-        ivCoverThumb = findViewById(R.id.ivCoverThumb);
-        ivAnatomyThumb = findViewById(R.id.ivAnatomyThumb);
         ivAnatomyLarge = findViewById(R.id.ivAnatomyLarge);
         tvEquipmentName = findViewById(R.id.tvEquipmentName);
         tvDescription = findViewById(R.id.tvDescription);
@@ -113,9 +108,8 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvPrimaryMuscles = findViewById(R.id.tvPrimaryMuscles);
         tvSecondaryMuscles = findViewById(R.id.tvSecondaryMuscles);
         tvVideoPlaceholder = findViewById(R.id.tvVideoPlaceholder);
-        tvCoverThumbPlaceholder = findViewById(R.id.tvCoverThumbPlaceholder);
-        tvAnatomyThumbPlaceholder = findViewById(R.id.tvAnatomyThumbPlaceholder);
         tvAnatomyPlaceholder = findViewById(R.id.tvAnatomyPlaceholder);
+        tvAnatomyMuscleSummary = findViewById(R.id.tvAnatomyMuscleSummary);
         scrollView = findViewById(R.id.scrollView);
 
         rvRecommendedExercises = findViewById(R.id.rvRecommendedExercises);
@@ -154,6 +148,7 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvPrimaryMuscles.setText(primaryBuilder.toString());
 
         List<String> secondaryMuscles = equipment.getSecondaryMuscles();
+        String secondaryText = "";
         if (secondaryMuscles != null && !secondaryMuscles.isEmpty()) {
             StringBuilder secondaryBuilder = new StringBuilder("辅助锻炼: ");
             for (int i = 0; i < secondaryMuscles.size(); i++) {
@@ -163,29 +158,21 @@ public class EquipmentDetailActivity extends AppCompatActivity {
                     secondaryBuilder.append("、");
                 }
             }
-            tvSecondaryMuscles.setText(secondaryBuilder.toString());
+            secondaryText = secondaryBuilder.toString();
+            tvSecondaryMuscles.setText(secondaryText);
             tvSecondaryMuscles.setVisibility(View.VISIBLE);
         } else {
             tvSecondaryMuscles.setVisibility(View.GONE);
         }
+
+        String anatomySummary = secondaryText.isEmpty()
+                ? primaryBuilder.toString()
+                : primaryBuilder + "\n" + secondaryText;
+        tvAnatomyMuscleSummary.setText(anatomySummary);
     }
 
     private void setupMediaImages(Equipment equipment) {
-        int coverResId = EquipmentImageResolver.getCoverResId(this, equipment);
         int anatomyResId = EquipmentImageResolver.getAnatomyResId(this, equipment);
-
-        showImageOrPlaceholder(
-                ivCoverThumb,
-                tvCoverThumbPlaceholder,
-                coverResId,
-                equipment.getName() + "\n封面待补充"
-        );
-        showImageOrPlaceholder(
-                ivAnatomyThumb,
-                tvAnatomyThumbPlaceholder,
-                anatomyResId,
-                equipment.getName() + "\n解剖图待补充"
-        );
         showImageOrPlaceholder(
                 ivAnatomyLarge,
                 tvAnatomyPlaceholder,
