@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="#FF111827"
+        android:elevation="8dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="8dp"
@@ -99,28 +100,29 @@
                         android:textSize="15sp" />
 
                     <LinearLayout
+                        android:id="@+id/videoInfoBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
+                        android:layout_gravity="top"
                         android:background="#CC111827"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="12dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="动作演示"
                             android:textColor="#FFFFFFFF"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="视频不可用时显示器材封面"
+                            android:layout_marginTop="2dp"
+                            android:text="点击视频可播放/暂停"
                             android:textColor="#FFE5E7EB"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <ImageButton
@@ -134,6 +136,48 @@
                         android:padding="10dp"
                         android:src="@android:drawable/ic_menu_rotate"
                         app:tint="#FFFFFFFF" />
+
+                    <!-- 自定义视频控制条，跟随视频容器 -->
+                    <LinearLayout
+                        android:id="@+id/videoControls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:background="#CC000000"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="4dp"
+                        android:visibility="gone">
+
+                        <ImageButton
+                            android:id="@+id/btnPlayPause"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="播放/暂停"
+                            android:src="@android:drawable/ic_media_play"
+                            app:tint="#FFFFFFFF" />
+
+                        <SeekBar
+                            android:id="@+id/seekBarVideo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:thumbTint="#FFFFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvVideoTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00:00 / 00:00"
+                            android:textColor="#FFFFFFFF"
+                            android:textSize="11sp" />
+                    </LinearLayout>
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
 

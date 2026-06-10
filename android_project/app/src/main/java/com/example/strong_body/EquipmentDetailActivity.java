@@ -9,8 +9,8 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,6 +66,14 @@ public class EquipmentDetailActivity extends AppCompatActivity {
     private ExecutorService networkExecutor;
     private Equipment currentEquipment;
 
+    // 自定义视频控制条
+    private View videoControls;
+    private ImageButton btnPlayPause;
+    private SeekBar seekBarVideo;
+    private TextView tvVideoTime;
+    private android.os.Handler videoHandler;
+    private boolean isSeeking = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +99,7 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         }
 
         networkExecutor = Executors.newSingleThreadExecutor();
+        videoHandler = new android.os.Handler(android.os.Looper.getMainLooper());
         initViews();
         bindData(currentEquipment);
         setupMediaImages(currentEquipment);
@@ -120,11 +130,19 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         tvSafetyTips = findViewById(R.id.tvSafetyTips);
         chipGroupSuitableFor = findViewById(R.id.chipGroupSuitableFor);
 
+        // 自定义视频控制条
+        videoControls = findViewById(R.id.videoControls);
+        btnPlayPause = findViewById(R.id.btnPlayPause);
+        seekBarVideo = findViewById(R.id.seekBarVideo);
+        tvVideoTime = findViewById(R.id.tvVideoTime);
+
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         findViewById(R.id.btnReplay).setOnClickListener(v -> {
             if (videoView != null) {
                 videoView.seekTo(0);
                 videoView.start();
+                btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                showVideoControls();
             }
         });
         findViewById(R.id.btnCloseDetail).setOnClickListener(v -> hideExerciseDetail());
@@ -277,14 +295,66 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             videoView.setVisibility(View.VISIBLE);
             ivVideoCover.setVisibility(View.GONE);
 
-            MediaController mediaController = new MediaController(this);
-            mediaController.setAnchorView(videoView);
-            videoView.setMediaController(mediaController);
+            // 不使用 MediaController，用自定义控制条
+            videoView.setMediaController(null);
+
+            // 播放/暂停按钮
+            btnPlayPause.setOnClickListener(v -> {
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                } else {
+                    videoView.start();
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                }
+                showVideoControls();
+            });
+
+            // SeekBar 拖动
+            seekBarVideo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser && videoView != null) {
+                        int duration = videoView.getDuration();
+                        if (duration > 0) {
+                            videoView.seekTo((int) (duration * progress / 100.0));
+                        }
+                    }
+                }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    isSeeking = true;
+                }
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    isSeeking = false;
+                    showVideoControls();
+                }
+            });
+
+            // 点击视频区域显示/隐藏控制条
+            videoView.setOnClickListener(v -> {
+                if (videoControls.getVisibility() == View.VISIBLE) {
+                    videoControls.setVisibility(View.GONE);
+                } else {
+                    showVideoControls();
+                }
+            });
 
             videoView.setOnPreparedListener(mp -> {
                 mp.setLooping(false);
                 hideVideoPlaceholder();
+                View infoBar = findViewById(R.id.videoInfoBar);
+                if (infoBar != null) infoBar.setVisibility(View.GONE);
                 videoView.start();
+                btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                showVideoControls();
+                startProgressUpdate();
+            });
+
+            videoView.setOnCompletionListener(mp -> {
+                btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                videoControls.setVisibility(View.VISIBLE);
             });
 
             videoView.setOnErrorListener((mp, what, extra) -> {
@@ -294,6 +364,44 @@ public class EquipmentDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             showVideoError();
         }
+    }
+
+    private void showVideoControls() {
+        if (videoControls != null) {
+            videoControls.setVisibility(View.VISIBLE);
+            videoHandler.removeCallbacks(hideControlsRunnable);
+            videoHandler.postDelayed(hideControlsRunnable, 4000);
+        }
+    }
+
+    private final Runnable hideControlsRunnable = () -> {
+        if (videoView != null && videoView.isPlaying() && !isSeeking) {
+            if (videoControls != null) videoControls.setVisibility(View.GONE);
+        }
+    };
+
+    private void startProgressUpdate() {
+        videoHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (videoView != null && videoView.getDuration() > 0) {
+                    int current = videoView.getCurrentPosition();
+                    int duration = videoView.getDuration();
+                    tvVideoTime.setText(formatTime(current) + " / " + formatTime(duration));
+                    if (!isSeeking) {
+                        seekBarVideo.setProgress((int) (current * 100L / duration));
+                    }
+                }
+                videoHandler.postDelayed(this, 500);
+            }
+        }, 500);
+    }
+
+    private String formatTime(int ms) {
+        int seconds = ms / 1000;
+        int m = seconds / 60;
+        int s = seconds % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d", m, s);
     }
 
     private void showVideoLoading() {
