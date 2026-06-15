@@ -43,3 +43,5 @@ Thumbs.db
 .claude.json
 .claude/
 .cursor/
+.claude/settings.local.json
+.claude/settings.local.json

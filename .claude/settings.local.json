@@ -4,7 +4,14 @@
       "Bash(git push *)",
       "Bash(gh auth *)",
       "Bash(winget install *)",
-      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web -h github.com)"
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web -h github.com)",
+      "Bash(pip install *)",
+      "Bash(echo \"=== 搜索任务计划书相关文件 ===\" *)",
+      "Read(//c/Users/ying/Desktop/软件工程/**)",
+      "Bash(python -X utf8 -c ' *)",
+      "Bash(python -X utf8 merge_report.py)",
+      "Bash(awk '{print $5, $NF}')",
+      "Bash(python -X utf8 format_part4.py)"
     ]
   }
 }
