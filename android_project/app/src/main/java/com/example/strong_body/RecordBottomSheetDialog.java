@@ -3,6 +3,7 @@ package com.example.strong_body;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +97,15 @@ public class RecordBottomSheetDialog extends BottomSheetDialogFragment {
                     String bodyPart = etBodyPart.getText().toString().trim();
                     if (!bodyPart.isEmpty()) body.put("bodyPart", bodyPart);
 
-                    String token = AuthAccountStorage.getAutoLoginAccount(getContext()).token;
+                    String token = AuthAccountStorage.getSessionToken(getContext());
+                    if (TextUtils.isEmpty(token)) {
+                        mainHandler.post(() -> {
+                            btnSaveRecord.setEnabled(true);
+                            btnSaveRecord.setText("淇濆瓨璁粌璁板綍");
+                            Toast.makeText(getContext(), "请先登录", Toast.LENGTH_SHORT).show();
+                        });
+                        return;
+                    }
                     GymEyeApiClient.HttpResult result = GymEyeApiClient.postJson("/api/workouts", token, body);
 
                     mainHandler.post(() -> {

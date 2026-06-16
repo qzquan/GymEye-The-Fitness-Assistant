@@ -27,6 +27,27 @@
       "password_hash": "$2a$10$RlyuzYhyKHG9KAMvU2JBJeytM1hSuaSQJ/9sHdzO1HtsRYsEwhhH.",
       "nickname": "豪",
       "created_at": "2026-06-16T10:27:09.673Z"
+    },
+    {
+      "id": 5,
+      "email": "123456@zhan.com",
+      "password_hash": "$2a$10$/4fLDvg2irYnFBoiFi6MUu19c2wNUJILNulkRXi0mQsYx3qaTcP5C",
+      "nickname": "zhan",
+      "created_at": "2026-06-16T15:05:50.653Z"
+    },
+    {
+      "id": 6,
+      "email": "123456@tianci.com",
+      "password_hash": "$2a$10$UHwIvCzF.Yi3WGwsNRfdsOtAZvUFh7tXO0yM4PvQ43Mdl36IIYTam",
+      "nickname": "tianci",
+      "created_at": "2026-06-16T15:06:19.146Z"
+    },
+    {
+      "id": 7,
+      "email": "123456@wbn.com",
+      "password_hash": "$2a$10$dhtMv7oNopYmTF9/sKCgRu4BiZPoqORJsZLhSBZjTVBS8BpnGPBX6",
+      "nickname": "123456",
+      "created_at": "2026-06-16T15:15:58.349Z"
     }
   ],
   "equipment": [
@@ -72,6 +93,84 @@
       "body_part": "胸部",
       "performed_at": "2026-06-16T10:28:15.033Z",
       "created_at": "2026-06-16T10:28:15.036Z"
+    },
+    {
+      "id": 2,
+      "user_id": 7,
+      "exercise_name": "坐姿推胸",
+      "sets": 4,
+      "reps_per_set": 10,
+      "weight_kg": 15,
+      "duration_minutes": 20,
+      "feeling": "moderate",
+      "body_part": "胸部",
+      "performed_at": "2026-06-16T15:16:11.178Z",
+      "created_at": "2026-06-16T15:16:11.180Z"
+    },
+    {
+      "id": 3,
+      "user_id": 7,
+      "exercise_name": "坐姿推胸",
+      "sets": 5,
+      "reps_per_set": 15,
+      "weight_kg": 20,
+      "duration_minutes": 30,
+      "feeling": "hard",
+      "body_part": "胸",
+      "performed_at": "2026-06-16T15:17:22.353Z",
+      "created_at": "2026-06-16T15:17:22.355Z"
+    },
+    {
+      "id": 4,
+      "user_id": 7,
+      "exercise_name": "坐姿推胸",
+      "sets": 4,
+      "reps_per_set": 30,
+      "weight_kg": 300,
+      "duration_minutes": 1,
+      "feeling": "easy",
+      "body_part": "胸部",
+      "performed_at": "2026-06-16T15:18:01.176Z",
+      "created_at": "2026-06-16T15:18:01.177Z"
+    },
+    {
+      "id": 5,
+      "user_id": 7,
+      "exercise_name": "坐姿推肩",
+      "sets": 4,
+      "reps_per_set": 12,
+      "weight_kg": 15,
+      "duration_minutes": 30,
+      "feeling": "moderate",
+      "body_part": "胸部",
+      "performed_at": "2026-06-16T15:57:24.104Z",
+      "created_at": "2026-06-16T15:57:24.105Z"
+    },
+    {
+      "id": 6,
+      "user_id": 7,
+      "exercise_name": "坐姿推肩",
+      "sets": 5,
+      "reps_per_set": 12,
+      "weight_kg": 25,
+      "duration_minutes": 30,
+      "feeling": "hard",
+      "body_part": "肩部",
+      "performed_at": "2026-06-16T15:57:56.282Z",
+      "created_at": "2026-06-16T15:57:56.283Z"
+    },
+    {
+      "id": 7,
+      "user_id": 7,
+      "exercise_name": "坐姿推肩",
+      "sets": 4,
+      "reps_per_set": 10,
+      "weight_kg": 100,
+      "duration_minutes": 15,
+      "feeling": "easy",
+      "body_part": "肩部",
+      "performed_at": "2026-06-16T15:58:20.195Z",
+      "created_at": "2026-06-16T15:58:20.196Z"
     }
   ],
   "exercise_videos": [
@@ -101,10 +200,10 @@
     }
   ],
   "counters": {
-    "users": 4,
+    "users": 7,
     "equipment": 3,
     "history": 0,
-    "workout_logs": 1,
+    "workout_logs": 7,
     "exercise_videos": 3
   }
 }

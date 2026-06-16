@@ -18,6 +18,7 @@ public final class AuthAccountStorage {
 
     private static final String PREFS = "gymeye_auth";
     private static final String KEY_ACCOUNTS_JSON = "saved_accounts_json";
+    private static final String KEY_SESSION_TOKEN = "session_token";
 
     private AuthAccountStorage() {}
 
@@ -58,11 +59,13 @@ public final class AuthAccountStorage {
     }
 
     public static String getSessionToken(Context ctx) {
-        SavedAccount account = getAutoLoginAccount(ctx);
-        if (account != null && account.token != null && !account.token.isEmpty()) {
-            return account.token;
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String sessionToken = prefs.getString(KEY_SESSION_TOKEN, "");
+        if (!TextUtils.isEmpty(sessionToken)) {
+            return sessionToken;
         }
-        account = getMostRecentlyUsed(ctx);
+
+        SavedAccount account = getAutoLoginAccount(ctx);
         if (account != null && account.token != null && !account.token.isEmpty()) {
             return account.token;
         }
@@ -79,6 +82,12 @@ public final class AuthAccountStorage {
     ) {
         if (TextUtils.isEmpty(email)) return;
         String normalizedEmail = normalizeEmail(email);
+
+        if (!TextUtils.isEmpty(token)) {
+            ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                    .putString(KEY_SESSION_TOKEN, token)
+                    .apply();
+        }
 
         if (!rememberAccount && !autoLogin) {
             remove(ctx, normalizedEmail);
@@ -133,7 +142,10 @@ public final class AuthAccountStorage {
 
     public static void logout(Context ctx) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        prefs.edit().remove(KEY_ACCOUNTS_JSON).apply();
+        prefs.edit()
+                .remove(KEY_ACCOUNTS_JSON)
+                .remove(KEY_SESSION_TOKEN)
+                .apply();
     }
 
     private static void remove(Context ctx, String email) {

@@ -115,13 +115,28 @@ public class EquipmentListActivity extends AppCompatActivity {
     }
 
     private boolean matchesMuscleFilter(Equipment equipment, String muscle) {
+        if ("chest".equals(muscle) && "shoulder_press".equals(equipment.getId())) {
+            return false;
+        }
         if ("arms".equals(muscle)) {
+            if (isExcludedFromArms(equipment)) {
+                return false;
+            }
             return hasAnyMuscle(equipment, "biceps", "triceps", "forearms");
         }
         if ("legs".equals(muscle)) {
             return hasAnyMuscle(equipment, "quadriceps", "hamstrings", "glutes", "calves");
         }
         return hasAnyMuscle(equipment, muscle);
+    }
+
+    private boolean isExcludedFromArms(Equipment equipment) {
+        String id = equipment.getId();
+        return "shoulder_press".equals(id)
+                || "lat_pulldown".equals(id)
+                || "seated_row".equals(id)
+                || "assisted_pull_up".equals(id)
+                || "bench_press".equals(id);
     }
 
     private boolean hasAnyMuscle(Equipment equipment, String... muscles) {
