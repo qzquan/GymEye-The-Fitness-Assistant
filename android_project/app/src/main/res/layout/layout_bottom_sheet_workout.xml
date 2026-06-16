@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/gymeye_surface"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/gymeye_space_20">
 
-        <!-- Handle bar -->
         <View
-            android:layout_width="32dp"
+            android:layout_width="36dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="#D1D1D6" />
+            android:layout_marginBottom="@dimen/gymeye_space_16"
+            android:background="#D1D8DF" />
 
         <TextView
             android:id="@+id/tvWorkoutSheetTitle"
@@ -26,420 +26,471 @@
             android:layout_height="wrap_content"
             android:text="训练打卡"
             android:textColor="@color/gymeye_text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            android:textSize="@dimen/gymeye_text_title"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="记录每一次训练，见证进步"
+            android:layout_marginTop="@dimen/gymeye_space_4"
+            android:layout_marginBottom="@dimen/gymeye_space_16"
+            android:text="记录动作、重量和训练感受"
             android:textColor="@color/gymeye_text_muted"
-            android:textSize="13sp"
-            android:layout_marginBottom="20dp" />
+            android:textSize="@dimen/gymeye_text_label" />
 
-        <!-- 动作名称 -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="动作名称 *"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+            android:layout_height="64dp">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/acSheetExercise"
+                style="@style/LoginInputField"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_gymeye_input_selector"
                 android:completionThreshold="1"
+                android:gravity="center_vertical"
+                android:imeOptions="actionNext"
                 android:inputType="text"
-                android:imeOptions="actionNext" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:paddingStart="@dimen/gymeye_space_16"
+                android:paddingEnd="@dimen/gymeye_space_16"
+                android:singleLine="true" />
 
-        <!-- 训练部位 -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:layout_marginStart="@dimen/gymeye_space_12"
+                android:layout_marginTop="@dimen/gymeye_space_4"
+                android:background="@color/gymeye_surface"
+                android:paddingStart="@dimen/gymeye_space_4"
+                android:paddingEnd="@dimen/gymeye_space_4"
+                android:text="动作名称 *"
+                android:textColor="@color/gymeye_text_primary"
+                android:textSize="@dimen/gymeye_text_label" />
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="训练部位（可选）"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+            android:layout_height="64dp"
+            android:layout_marginTop="@dimen/gymeye_space_8">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/acSheetBodyPart"
+                style="@style/LoginInputField"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_gymeye_input_selector"
+                android:completionThreshold="1"
+                android:gravity="center_vertical"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:paddingStart="@dimen/gymeye_space_16"
+                android:paddingEnd="@dimen/gymeye_space_16"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:layout_marginStart="@dimen/gymeye_space_12"
+                android:layout_marginTop="@dimen/gymeye_space_4"
+                android:background="@color/gymeye_surface"
+                android:paddingStart="@dimen/gymeye_space_4"
+                android:paddingEnd="@dimen/gymeye_space_4"
+                android:text="训练部位"
+                android:textColor="@color/gymeye_text_primary"
+                android:textSize="@dimen/gymeye_text_label" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gymeye_space_12"
+            android:background="@drawable/bg_stats_filter_panel"
+            android:orientation="vertical"
+            android:padding="@dimen/gymeye_space_12">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:completionThreshold="1"
-                android:inputType="text"
-                android:imeOptions="actionNext" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-        <!-- 分隔 -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="14dp"
-            android:background="@color/gymeye_divider" />
-
-        <!-- 组数 + 每组次数 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
-
-            <!-- 组数 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="组数"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp">
+                    android:layout_marginEnd="@dimen/gymeye_space_8"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etSheetSets"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:imeOptions="actionNext" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="组数"
+                        app:boxBackgroundColor="@color/gymeye_surface"
+                        app:boxCornerRadiusBottomEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusBottomStart="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopStart="@dimen/gymeye_radius_input"
+                        app:boxStrokeColor="@color/gymeye_border">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipSets"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    app:singleSelection="false"
-                    app:singleLine="true">
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipSets3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipSets4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="4" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipSets5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipSets6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="6" />
-                </com.google.android.material.chip.ChipGroup>
-            </LinearLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etSheetSets"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 每组次数 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="每组次数"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etSheetReps"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:imeOptions="actionNext" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipReps"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    app:singleSelection="false"
-                    app:singleLine="true">
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipReps8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="8" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipReps10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipReps12"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="12" />
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:id="@+id/chipReps15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="15" />
-                </com.google.android.material.chip.ChipGroup>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- 重量 + 时长 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="6dp"
-            android:baselineAligned="false">
-
-            <!-- 重量 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="重量 (kg)"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etSheetWeight"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
-                        android:imeOptions="actionNext" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:scrollbars="none">
                     <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipWeight"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/chipSets"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:singleSelection="false"
-                        app:singleLine="true">
+                        android:layout_marginTop="@dimen/gymeye_space_4"
+                        app:singleLine="true"
+                        app:singleSelection="false">
+
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSets3"
                             style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSets4"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSets5"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSets6"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6" />
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/gymeye_space_8"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="每组次数"
+                        app:boxBackgroundColor="@color/gymeye_surface"
+                        app:boxCornerRadiusBottomEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusBottomStart="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopStart="@dimen/gymeye_radius_input"
+                        app:boxStrokeColor="@color/gymeye_border">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etSheetReps"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipReps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gymeye_space_4"
+                        app:singleLine="true"
+                        app:singleSelection="false">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipReps8"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="8" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipReps10"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="10" />
+
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chipReps12"
                             style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="12" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipReps15"
+                            style="@style/Widget.MaterialComponents.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="15" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight25"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="25" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight30"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="30" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight40"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="40" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipWeight50"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="50" />
                     </com.google.android.material.chip.ChipGroup>
-                </HorizontalScrollView>
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- 时长 -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/gymeye_space_8"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="时长 (分钟)"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp">
+                    android:layout_marginEnd="@dimen/gymeye_space_8"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etSheetDuration"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:imeOptions="actionDone" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="重量 kg"
+                        app:boxBackgroundColor="@color/gymeye_surface"
+                        app:boxCornerRadiusBottomEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusBottomStart="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopStart="@dimen/gymeye_radius_input"
+                        app:boxStrokeColor="@color/gymeye_border">
 
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:scrollbars="none">
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipDuration"
-                        android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etSheetWeight"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:singleSelection="false"
-                        app:singleLine="true">
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipDur15"
+                        android:layout_marginTop="@dimen/gymeye_space_4"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipWeight"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="15" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipDur20"
+                            app:singleLine="true"
+                            app:singleSelection="false">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight10"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="10" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight15"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="15" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight20"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="20" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight25"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="25" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight30"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="30" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight40"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="40" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWeight50"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="50" />
+                        </com.google.android.material.chip.ChipGroup>
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/gymeye_space_8"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="时长 分钟"
+                        app:boxBackgroundColor="@color/gymeye_surface"
+                        app:boxCornerRadiusBottomEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusBottomStart="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopEnd="@dimen/gymeye_radius_input"
+                        app:boxCornerRadiusTopStart="@dimen/gymeye_radius_input"
+                        app:boxStrokeColor="@color/gymeye_border">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etSheetDuration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gymeye_space_4"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="20" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipDur30"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="30" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipDur45"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="45" />
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.MaterialComponents.Chip.Filter"
-                            android:id="@+id/chipDur60"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="60" />
-                    </com.google.android.material.chip.ChipGroup>
-                </HorizontalScrollView>
+                            app:singleLine="true"
+                            app:singleSelection="false">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipDur15"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="15" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipDur20"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="20" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipDur30"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="30" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipDur45"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="45" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipDur60"
+                                style="@style/Widget.MaterialComponents.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="60" />
+                        </com.google.android.material.chip.ChipGroup>
+                    </HorizontalScrollView>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 分隔 -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="14dp"
-            android:background="@color/gymeye_divider" />
-
-        <!-- 感受 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="训练感受 *"
-            android:textColor="@color/gymeye_text_secondary"
-            android:textSize="14sp"
-            android:layout_marginBottom="10dp" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/rgSheetFeeling"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:singleSelection="true"
-            app:singleLine="true">
+            android:layout_marginTop="@dimen/gymeye_space_12"
+            android:background="@drawable/bg_stats_filter_panel"
+            android:orientation="vertical"
+            android:padding="@dimen/gymeye_space_12">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/rbSheetEasy"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="轻松"
-                android:textSize="13sp" />
+                android:text="训练感受 *"
+                android:textColor="@color/gymeye_text_secondary"
+                android:textSize="@dimen/gymeye_text_label"
+                android:textStyle="bold" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/rbSheetModerate"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/rgSheetFeeling"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="适中"
-                android:textSize="13sp" />
+                android:layout_marginTop="@dimen/gymeye_space_8"
+                app:singleLine="true"
+                app:singleSelection="true">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/rbSheetHard"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="困难"
-                android:textSize="13sp" />
-        </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/rbSheetEasy"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="轻松"
+                    android:textSize="@dimen/gymeye_text_label" />
 
-        <!-- 提交按钮 -->
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/rbSheetModerate"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="适中"
+                    android:textSize="@dimen/gymeye_text_label" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/rbSheetHard"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="困难"
+                    android:textSize="@dimen/gymeye_text_label" />
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSheetSubmit"
             android:layout_width="match_parent"
             android:layout_height="56dp"
+            android:layout_marginTop="@dimen/gymeye_space_16"
             android:text="提交打卡"
             android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:textColor="@color/gymeye_on_primary"
+            android:textSize="@dimen/gymeye_text_body"
+            android:textStyle="bold"
             app:backgroundTint="@color/gymeye_primary"
-            app:cornerRadius="14dp" />
+            app:cornerRadius="@dimen/gymeye_radius_button" />
     </LinearLayout>
 </ScrollView>

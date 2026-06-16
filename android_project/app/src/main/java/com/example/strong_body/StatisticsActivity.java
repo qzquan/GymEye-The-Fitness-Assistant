@@ -1,19 +1,26 @@
 package com.example.strong_body;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -21,32 +28,41 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class StatisticsActivity extends AppCompatActivity {
+
+    private static final int HEAT_COLUMNS = 18;
 
     private TextView tvWeeklyCount, tvTotalDuration, tvTopBodyPart, tvStreakDays, tvMonthLabel;
     private LineChart weightLineChart;
     private GridLayout calendarGrid;
     private LinearLayout recentRecordsContainer;
-    private ChipGroup chipGroupEquipment;
+    private ChipGroup chipGroupEquipment, chipGroupMuscleFilter;
+    private EditText etSearchExercise;
     private Button btnCheckIn;
 
     private JSONObject statsData;
     private Map<String, Object> weightProgression;
-    private List<JSONObject> workoutLogs = new ArrayList<>();
+    private final List<JSONObject> workoutLogs = new ArrayList<>();
+    private final List<Equipment> allEquipment = new ArrayList<>();
+    private final List<Equipment> visibleEquipment = new ArrayList<>();
+    private String selectedExerciseName = "";
+    private String selectedMuscleFilter = "";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-
-    private static final String[] KNOWN_EXERCISES = {"坐姿推胸", "坐姿腿弯举", "坐姿腿屈伸"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,30 +78,27 @@ public class StatisticsActivity extends AppCompatActivity {
         calendarGrid = findViewById(R.id.calendarGrid);
         recentRecordsContainer = findViewById(R.id.recentRecordsContainer);
         chipGroupEquipment = findViewById(R.id.chipGroupEquipment);
+        chipGroupMuscleFilter = findViewById(R.id.chipGroupMuscleFilter);
+        etSearchExercise = findViewById(R.id.etSearchExercise);
         btnCheckIn = findViewById(R.id.btnCheckIn);
 
-        setupChartBaseStyle();
-        showLoadingState();
+        allEquipment.addAll(EquipmentRepository.getAllEquipment());
+        if (!allEquipment.isEmpty()) {
+            selectedExerciseName = allEquipment.get(0).getName();
+        }
 
+        setupChartBaseStyle();
+        setupExerciseFilters();
+        showLoadingState();
         loadData();
 
-        chipGroupEquipment.setOnCheckedChangeListener((group, checkedId) -> {
-            String exercise = getSelectedExercise(checkedId);
-            updateWeightChart(exercise);
-        });
-
         btnCheckIn.setOnClickListener(v -> {
-            String exercise = getSelectedExercise(chipGroupEquipment.getCheckedChipId());
+            String exercise = TextUtils.isEmpty(selectedExerciseName)
+                    ? getFallbackExerciseName()
+                    : selectedExerciseName;
             WorkoutLogBottomSheet.newInstance(exercise, this::loadData)
                     .show(getSupportFragmentManager(), "WorkoutLog");
         });
-    }
-
-    private String getSelectedExercise(int checkedId) {
-        if (checkedId == R.id.chipChestPress) return KNOWN_EXERCISES[0];
-        else if (checkedId == R.id.chipLegCurl) return KNOWN_EXERCISES[1];
-        else if (checkedId == R.id.chipLegExtension) return KNOWN_EXERCISES[2];
-        return KNOWN_EXERCISES[0];
     }
 
     private void showLoadingState() {
@@ -95,22 +108,133 @@ public class StatisticsActivity extends AppCompatActivity {
         tvStreakDays.setText("...");
     }
 
+    private void setupExerciseFilters() {
+        addMuscleChip("全部", "", true);
+        addMuscleChip("胸部", "chest", false);
+        addMuscleChip("背部", "back", false);
+        addMuscleChip("腿部", "legs", false);
+        addMuscleChip("肩部", "shoulders", false);
+        addMuscleChip("手臂", "arms", false);
+
+        etSearchExercise.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applyExerciseFilters();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        applyExerciseFilters();
+    }
+
+    private void addMuscleChip(String label, String value, boolean checked) {
+        Chip chip = createChoiceChip(label);
+        chip.setTag(value);
+        chip.setChecked(checked);
+        chip.setOnClickListener(v -> {
+            selectedMuscleFilter = String.valueOf(v.getTag());
+            applyExerciseFilters();
+        });
+        chipGroupMuscleFilter.addView(chip);
+    }
+
+    private void applyExerciseFilters() {
+        String query = etSearchExercise.getText() == null
+                ? ""
+                : etSearchExercise.getText().toString().trim().toLowerCase();
+        visibleEquipment.clear();
+
+        for (Equipment equipment : allEquipment) {
+            if (!TextUtils.isEmpty(selectedMuscleFilter)
+                    && !matchesMuscleFilter(equipment, selectedMuscleFilter)) {
+                continue;
+            }
+            if (!TextUtils.isEmpty(query) && !matchesExerciseQuery(equipment, query)) {
+                continue;
+            }
+            visibleEquipment.add(equipment);
+        }
+
+        if (visibleEquipment.isEmpty()) {
+            selectedExerciseName = "";
+        } else if (TextUtils.isEmpty(selectedExerciseName)
+                || !containsEquipmentName(visibleEquipment, selectedExerciseName)) {
+            selectedExerciseName = visibleEquipment.get(0).getName();
+        }
+
+        renderEquipmentChips();
+        updateWeightChart(TextUtils.isEmpty(selectedExerciseName) ? getFallbackExerciseName() : selectedExerciseName);
+    }
+
+    private void renderEquipmentChips() {
+        chipGroupEquipment.removeAllViews();
+        if (visibleEquipment.isEmpty()) {
+            Chip empty = createChoiceChip("无匹配器材");
+            empty.setEnabled(false);
+            chipGroupEquipment.addView(empty);
+            return;
+        }
+
+        for (Equipment equipment : visibleEquipment) {
+            Chip chip = createChoiceChip(equipment.getName());
+            chip.setChecked(equipment.getName().equals(selectedExerciseName));
+            chip.setOnClickListener(v -> {
+                selectedExerciseName = equipment.getName();
+                renderEquipmentChips();
+                updateWeightChart(selectedExerciseName);
+            });
+            chipGroupEquipment.addView(chip);
+        }
+    }
+
+    private Chip createChoiceChip(String label) {
+        Chip chip = new Chip(this);
+        chip.setText(label);
+        chip.setCheckable(true);
+        chip.setCheckedIconVisible(false);
+        chip.setTextSize(12);
+        chip.setChipMinHeight(dp(36));
+        chip.setChipCornerRadius(dp(18));
+        chip.setChipStrokeWidth(dp(1));
+        chip.setChipStrokeColorResource(R.color.gymeye_border);
+        chip.setTextColor(Color.parseColor("#56616D"));
+        return chip;
+    }
+
     private void loadData() {
         executor.execute(() -> {
             try {
-                SavedAccount account = AuthAccountStorage.getAutoLoginAccount(this);
-                String token = account != null ? account.token : "";
+                String token = AuthAccountStorage.getSessionToken(this);
+                if (TextUtils.isEmpty(token)) {
+                    mainHandler.post(() -> {
+                        tvWeeklyCount.setText("-");
+                        tvTotalDuration.setText("-");
+                        tvTopBodyPart.setText("-");
+                        tvStreakDays.setText("-");
+                        Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
 
-                // Fetch stats
                 GymEyeApiClient.HttpResult statsResult = GymEyeApiClient.get("/api/workouts/stats/summary", token);
                 if (statsResult.code == 200) {
                     statsData = statsResult.jsonOrEmpty().optJSONObject("data");
                 }
 
-                // Fetch recent logs
                 GymEyeApiClient.HttpResult listResult = GymEyeApiClient.get("/api/workouts?limit=10", token);
                 if (listResult.code == 200) {
-                    JSONArray rows = listResult.jsonOrEmpty().optJSONArray("rows");
+                    JSONObject listJson = listResult.jsonOrEmpty();
+                    JSONArray rows = listJson.optJSONArray("data");
+                    if (rows == null) {
+                        rows = listJson.optJSONArray("rows");
+                    }
                     workoutLogs.clear();
                     if (rows != null) {
                         for (int i = 0; i < rows.length(); i++) {
@@ -119,12 +243,11 @@ public class StatisticsActivity extends AppCompatActivity {
                     }
                 }
 
-                // Build weight progression from stats data or logs
                 buildWeightProgressionFromStats();
 
                 mainHandler.post(() -> {
                     updateSummaryCards();
-                    updateWeightChart(getSelectedExercise(chipGroupEquipment.getCheckedChipId()));
+                    updateWeightChart(TextUtils.isEmpty(selectedExerciseName) ? getFallbackExerciseName() : selectedExerciseName);
                     updateCalendar();
                     updateRecentRecords();
                 });
@@ -141,7 +264,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void buildWeightProgressionFromStats() {
-        weightProgression = new java.util.HashMap<>();
+        weightProgression = new HashMap<>();
         if (statsData == null) return;
 
         JSONObject wp = statsData.optJSONObject("weightProgression");
@@ -200,9 +323,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void updateWeightChart(String exerciseName) {
-        if (weightProgression == null) {
+        if (weightProgression == null || TextUtils.isEmpty(exerciseName)) {
             weightLineChart.clear();
             setupChartBaseStyle();
+            weightLineChart.invalidate();
             return;
         }
 
@@ -212,17 +336,22 @@ public class StatisticsActivity extends AppCompatActivity {
             weightLineChart.clear();
             setupChartBaseStyle();
             weightLineChart.setNoDataText(exerciseName + " 暂无重量数据");
+            weightLineChart.invalidate();
             return;
         }
 
         LineDataSet dataSet = new LineDataSet(entries, exerciseName + " 重量 (kg)");
-        dataSet.setColor(Color.parseColor("#1D1D1F"));
-        dataSet.setCircleColor(Color.parseColor("#1D1D1F"));
+        dataSet.setColor(Color.parseColor("#00BFA6"));
+        dataSet.setCircleColor(Color.parseColor("#00BFA6"));
         dataSet.setLineWidth(3f);
+        dataSet.setCircleRadius(4f);
+        dataSet.setDrawCircleHole(false);
         dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.parseColor("#56616D"));
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         dataSet.setDrawFilled(true);
-        dataSet.setFillColor(Color.parseColor("#E5E5EA"));
+        dataSet.setFillColor(Color.parseColor("#BFEAD9"));
+        dataSet.setFillAlpha(120);
         dataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -233,7 +362,8 @@ public class StatisticsActivity extends AppCompatActivity {
         weightLineChart.setData(new LineData(dataSet));
         weightLineChart.getAxisLeft().setGranularity(1f);
         weightLineChart.getAxisLeft().setAxisMinimum(0f);
-        weightLineChart.animateX(1000);
+        weightLineChart.getLegend().setTextColor(Color.parseColor("#56616D"));
+        weightLineChart.animateX(800);
     }
 
     private void updateCalendar() {
@@ -243,86 +373,30 @@ public class StatisticsActivity extends AppCompatActivity {
         JSONArray calendarDays = statsData.optJSONArray("calendarDays");
         if (calendarDays == null || calendarDays.length() == 0) return;
 
-        // Add day-of-week headers
-        String[] weekHeaders = {"一", "二", "三", "四", "五", "六", "日"};
-        for (String header : weekHeaders) {
-            TextView tv = new TextView(this);
-            tv.setText(header);
-            tv.setTextSize(10);
-            tv.setTextColor(Color.parseColor("#86868B"));
-            tv.setGravity(Gravity.CENTER);
-            tv.setPadding(2, 4, 2, 4);
-            calendarGrid.addView(tv);
-        }
-
-        // Determine first day of week offset (1=Mon .. 7=Sun → 0=Mon .. 6=Sun)
-        int firstDayOffset = 0;
-        if (calendarDays.length() > 0) {
-            String firstDate = calendarDays.optJSONObject(0).optString("date", "");
-            try {
-                String[] parts = firstDate.split("-");
-                int y = Integer.parseInt(parts[0]);
-                int m = Integer.parseInt(parts[1]);
-                int d = Integer.parseInt(parts[2]);
-                java.util.Calendar cal = java.util.Calendar.getInstance();
-                cal.set(y, m - 1, d);
-                int dow = cal.get(java.util.Calendar.DAY_OF_WEEK); // 1=Sun .. 7=Sat
-                firstDayOffset = dow == 1 ? 6 : dow - 2; // → 0=Mon .. 6=Sun
-            } catch (Exception ignored) {}
-        }
-
-        // Add empty cells for offset
-        for (int i = 0; i < firstDayOffset; i++) {
-            View v = new View(this);
-            v.setLayoutParams(new ViewGroup.LayoutParams(0, 24));
-            calendarGrid.addView(v);
-        }
-
-        // Determine month boundaries for labels
-        String currentMonth = "";
-
-        // Add day cells
+        calendarGrid.setColumnCount(HEAT_COLUMNS);
         for (int i = 0; i < calendarDays.length(); i++) {
             JSONObject day = calendarDays.optJSONObject(i);
+            if (day == null) continue;
+
             String date = day.optString("date", "");
             int count = day.optInt("count", 0);
 
-            // Track month changes
-            if (date.length() >= 7) {
-                String month = date.substring(0, 7);
-                if (!month.equals(currentMonth)) {
-                    currentMonth = month;
-                }
-            }
-
-            TextView tv = new TextView(this);
-            tv.setText(String.valueOf(Integer.parseInt(date.substring(8, 10))));
-            tv.setTextSize(9);
-            tv.setTextColor(count > 0 ? Color.WHITE : Color.parseColor("#86868B"));
-            tv.setGravity(Gravity.CENTER);
-            tv.setPadding(2, 3, 2, 3);
-
-            int bgColor;
-            if (count == 0) bgColor = Color.parseColor("#F0F0F0");
-            else if (count == 1) bgColor = Color.parseColor("#A1D4A8");
-            else if (count == 2) bgColor = Color.parseColor("#5ABF60");
-            else if (count == 3) bgColor = Color.parseColor("#388E3C");
-            else bgColor = Color.parseColor("#1B5E20");
-
-            tv.setBackgroundColor(bgColor);
-
-            // Add tooltip with full date
-            tv.setOnClickListener(v -> Toast.makeText(this, date + ": " + count + "次训练", Toast.LENGTH_SHORT).show());
-
-            calendarGrid.addView(tv);
+            View cell = new View(this);
+            cell.setBackgroundResource(getHeatBackground(count));
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.width = 0;
+            params.height = dp(14);
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            params.setMargins(dp(2), dp(2), dp(2), dp(2));
+            cell.setLayoutParams(params);
+            cell.setOnClickListener(v ->
+                    Toast.makeText(this, date + ": " + count + " 次训练", Toast.LENGTH_SHORT).show());
+            calendarGrid.addView(cell);
         }
 
-        // Show month label
-        if (calendarDays.length() > 0) {
-            String firstDate = calendarDays.optJSONObject(0).optString("date", "");
-            String lastDate = calendarDays.optJSONObject(calendarDays.length() - 1).optString("date", "");
-            tvMonthLabel.setText(firstDate + " ~ " + lastDate);
-        }
+        String firstDate = calendarDays.optJSONObject(0).optString("date", "");
+        String lastDate = calendarDays.optJSONObject(calendarDays.length() - 1).optString("date", "");
+        tvMonthLabel.setText(firstDate + " ~ " + lastDate);
     }
 
     private void updateRecentRecords() {
@@ -333,7 +407,7 @@ public class StatisticsActivity extends AppCompatActivity {
             empty.setTextSize(14);
             empty.setTextColor(Color.parseColor("#86868B"));
             empty.setGravity(Gravity.CENTER);
-            empty.setPadding(0, 24, 0, 24);
+            empty.setPadding(0, dp(24), 0, dp(24));
             recentRecordsContainer.addView(empty);
             return;
         }
@@ -347,21 +421,22 @@ public class StatisticsActivity extends AppCompatActivity {
             double weight = log.optDouble("weightKg", -1);
             int duration = log.optInt("durationMinutes", 0);
             String feeling = log.optString("feeling", "");
-            String date = log.optString("performedAt", "").substring(0, Math.min(10, log.optString("performedAt", "").length()));
+            String performedAt = log.optString("performedAt", "");
+            String date = performedAt.substring(0, Math.min(10, performedAt.length()));
 
             CardView card = new CardView(this);
             card.setCardElevation(0);
             card.setCardBackgroundColor(Color.parseColor("#F5F7FA"));
-            card.setRadius(12);
-            card.setUseCompatPadding(true);
+            card.setRadius(dp(14));
             LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            cardParams.bottomMargin = 8;
+            cardParams.bottomMargin = dp(8);
             card.setLayoutParams(cardParams);
 
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setPadding(12, 10, 12, 10);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(12), dp(10), dp(12), dp(10));
 
             LinearLayout left = new LinearLayout(this);
             left.setOrientation(LinearLayout.VERTICAL);
@@ -370,22 +445,21 @@ public class StatisticsActivity extends AppCompatActivity {
             TextView tvName = new TextView(this);
             tvName.setText(name);
             tvName.setTextSize(15);
-            tvName.setTextColor(Color.parseColor("#1D1D1F"));
-            tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvName.setTextColor(Color.parseColor("#111827"));
+            tvName.setTypeface(null, Typeface.BOLD);
             left.addView(tvName);
 
             StringBuilder detail = new StringBuilder();
             if (sets > 0) detail.append(sets).append("组");
-            if (reps > 0) detail.append(" × ").append(reps).append("次");
+            if (reps > 0) detail.append(" x ").append(reps).append("次");
             if (weight >= 0) detail.append("  ").append((int) weight).append("kg");
             if (duration > 0) detail.append("  ").append(duration).append("分钟");
 
             TextView tvDetail = new TextView(this);
             tvDetail.setText(detail.toString().trim());
             tvDetail.setTextSize(12);
-            tvDetail.setTextColor(Color.parseColor("#86868B"));
+            tvDetail.setTextColor(Color.parseColor("#56616D"));
             left.addView(tvDetail);
-
             row.addView(left);
 
             LinearLayout right = new LinearLayout(this);
@@ -393,22 +467,16 @@ public class StatisticsActivity extends AppCompatActivity {
             right.setGravity(Gravity.END);
 
             TextView tvFeeling = new TextView(this);
-            String feelingText;
-            switch (feeling) {
-                case "easy": feelingText = "轻松"; break;
-                case "moderate": feelingText = "适中"; break;
-                case "hard": feelingText = "困难"; break;
-                default: feelingText = feeling;
-            }
-            tvFeeling.setText(feelingText);
+            tvFeeling.setText(getFeelingText(feeling));
             tvFeeling.setTextSize(12);
-            tvFeeling.setTextColor(Color.parseColor("#1D1D1F"));
+            tvFeeling.setTextColor(Color.parseColor("#008C7A"));
+            tvFeeling.setTypeface(null, Typeface.BOLD);
             right.addView(tvFeeling);
 
             TextView tvDate = new TextView(this);
             tvDate.setText(date);
             tvDate.setTextSize(11);
-            tvDate.setTextColor(Color.parseColor("#86868B"));
+            tvDate.setTextColor(Color.parseColor("#8A96A3"));
             right.addView(tvDate);
 
             row.addView(right);
@@ -419,19 +487,127 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void setupChartBaseStyle() {
         weightLineChart.setNoDataText("暂无重量数据，先记录训练吧");
+        weightLineChart.setNoDataTextColor(Color.parseColor("#56616D"));
         weightLineChart.getDescription().setEnabled(false);
+        weightLineChart.setDrawGridBackground(false);
+        weightLineChart.setTouchEnabled(true);
+        weightLineChart.setPinchZoom(false);
+        weightLineChart.getAxisRight().setEnabled(false);
+
         XAxis xAxis = weightLineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);
-        weightLineChart.getAxisRight().setEnabled(false);
-        weightLineChart.getAxisLeft().setDrawGridLines(false);
-        weightLineChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
+        xAxis.setTextColor(Color.parseColor("#8A96A3"));
+
+        YAxis leftAxis = weightLineChart.getAxisLeft();
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGridColor(Color.parseColor("#33BFEAD9"));
+        leftAxis.setTextColor(Color.parseColor("#8A96A3"));
+        leftAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
                 return (int) value + "kg";
             }
         });
+    }
+
+    private boolean matchesExerciseQuery(Equipment equipment, String lowerQuery) {
+        return contains(equipment.getName(), lowerQuery)
+                || contains(equipment.getDescription(), lowerQuery)
+                || containsMuscle(equipment.getTargetMuscles(), lowerQuery)
+                || containsMuscle(equipment.getSecondaryMuscles(), lowerQuery);
+    }
+
+    private boolean contains(String value, String lowerQuery) {
+        return value != null && value.toLowerCase().contains(lowerQuery);
+    }
+
+    private boolean containsMuscle(List<String> muscles, String lowerQuery) {
+        if (muscles == null) return false;
+        for (String muscle : muscles) {
+            if (contains(muscle, lowerQuery)
+                    || contains(EquipmentRepository.getMuscleNameCn(muscle), lowerQuery)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean matchesMuscleFilter(Equipment equipment, String muscle) {
+        if ("chest".equals(muscle) && "shoulder_press".equals(equipment.getId())) {
+            return false;
+        }
+        if ("arms".equals(muscle)) {
+            if (isExcludedFromArms(equipment)) {
+                return false;
+            }
+            return hasAnyMuscle(equipment, "biceps", "triceps", "forearms");
+        }
+        if ("legs".equals(muscle)) {
+            return hasAnyMuscle(equipment, "quadriceps", "hamstrings", "glutes", "calves");
+        }
+        return hasAnyMuscle(equipment, muscle);
+    }
+
+    private boolean isExcludedFromArms(Equipment equipment) {
+        String id = equipment.getId();
+        return "shoulder_press".equals(id)
+                || "lat_pulldown".equals(id)
+                || "seated_row".equals(id)
+                || "assisted_pull_up".equals(id)
+                || "bench_press".equals(id);
+    }
+
+    private boolean hasAnyMuscle(Equipment equipment, String... muscles) {
+        for (String muscle : muscles) {
+            if (hasMuscle(equipment.getTargetMuscles(), muscle)
+                    || hasMuscle(equipment.getSecondaryMuscles(), muscle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasMuscle(List<String> muscles, String target) {
+        return muscles != null && muscles.contains(target);
+    }
+
+    private boolean containsEquipmentName(List<Equipment> list, String name) {
+        for (Equipment equipment : list) {
+            if (equipment.getName().equals(name)) return true;
+        }
+        return false;
+    }
+
+    private String getFallbackExerciseName() {
+        return allEquipment.isEmpty() ? "" : allEquipment.get(0).getName();
+    }
+
+    private String getFeelingText(String feeling) {
+        switch (feeling) {
+            case "easy":
+                return "轻松";
+            case "moderate":
+                return "适中";
+            case "hard":
+                return "困难";
+            default:
+                return feeling;
+        }
+    }
+
+    private int getHeatBackground(int count) {
+        if (count <= 0) return R.drawable.bg_heat_0;
+        if (count == 1) return R.drawable.bg_heat_1;
+        if (count == 2) return R.drawable.bg_heat_2;
+        if (count == 3) return R.drawable.bg_heat_3;
+        if (count == 4) return R.drawable.bg_heat_4;
+        return R.drawable.bg_heat_5;
+    }
+
+    private int dp(int value) {
+        return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
     }
 
     @Override
