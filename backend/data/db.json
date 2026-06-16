@@ -20,6 +20,13 @@
       "password_hash": "$2a$10$.0ToPiWepuk5OdfZpId8qeaDT9Bq3Q1pg9BOH.Aqdda7FQJsJqVAa",
       "nickname": "Zou666",
       "created_at": "2026-05-14T12:51:53.886Z"
+    },
+    {
+      "id": 4,
+      "email": "123456@hao.com",
+      "password_hash": "$2a$10$RlyuzYhyKHG9KAMvU2JBJeytM1hSuaSQJ/9sHdzO1HtsRYsEwhhH.",
+      "nickname": "豪",
+      "created_at": "2026-06-16T10:27:09.673Z"
     }
   ],
   "equipment": [
@@ -52,7 +59,21 @@
     }
   ],
   "history": [],
-  "workout_logs": [],
+  "workout_logs": [
+    {
+      "id": 1,
+      "user_id": 4,
+      "exercise_name": "坐姿推胸",
+      "sets": 4,
+      "reps_per_set": 10,
+      "weight_kg": 15,
+      "duration_minutes": 30,
+      "feeling": "moderate",
+      "body_part": "胸部",
+      "performed_at": "2026-06-16T10:28:15.033Z",
+      "created_at": "2026-06-16T10:28:15.036Z"
+    }
+  ],
   "exercise_videos": [
     {
       "id": 1,
@@ -80,10 +101,10 @@
     }
   ],
   "counters": {
-    "users": 3,
+    "users": 4,
     "equipment": 3,
     "history": 0,
-    "workout_logs": 0,
+    "workout_logs": 1,
     "exercise_videos": 3
   }
 }

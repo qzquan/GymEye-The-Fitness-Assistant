@@ -16,59 +16,117 @@
         android:paddingEnd="@dimen/gymeye_page_margin_horizontal"
         android:paddingBottom="28dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="GymEye"
+            android:textColor="@color/gymeye_text_primary"
+            android:textSize="@dimen/gymeye_text_display"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gymeye_space_8"
+            android:text="欢迎回来，开始今天的训练"
+            android:textColor="@color/gymeye_text_primary"
+            android:textSize="@dimen/gymeye_text_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gymeye_space_8"
+            android:text="扫描器械，获取动作指导"
+            android:textColor="@color/gymeye_text_secondary"
+            android:textSize="@dimen/gymeye_text_body" />
+
+        <FrameLayout
+            android:id="@+id/btnScan"
+            android:layout_width="match_parent"
+            android:layout_height="196dp"
+            android:layout_marginTop="@dimen/gymeye_space_24"
+            android:background="@drawable/bg_main_scan_hero"
+            android:clickable="true"
+            android:elevation="3dp"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:padding="@dimen/gymeye_space_20">
+
+            <View
+                android:id="@+id/scanWaveDark"
+                android:layout_width="168dp"
+                android:layout_height="102dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="-28dp"
+                android:layout_marginTop="-12dp"
+                android:background="@drawable/bg_main_scan_wave_dark" />
+
+            <View
+                android:id="@+id/scanWaveLight"
+                android:layout_width="190dp"
+                android:layout_height="110dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="-34dp"
+                android:layout_marginBottom="-18dp"
+                android:background="@drawable/bg_main_scan_wave_light" />
+
+            <View
+                android:id="@+id/scanWaveMid"
+                android:layout_width="132dp"
+                android:layout_height="78dp"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/bg_main_scan_wave_mid" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingTop="10dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="GymEye"
-                android:textColor="@color/gymeye_text_primary"
-                android:textSize="@dimen/gymeye_text_display"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gymeye_space_8"
-                android:text="欢迎回来，开始今天的训练"
-                android:textColor="@color/gymeye_text_primary"
+                android:text="让镜头成为你的训练入口"
+                android:textColor="@color/gymeye_on_primary"
                 android:textSize="@dimen/gymeye_text_title"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gymeye_space_4"
-                android:text="扫描器械，获取动作指导"
-                android:textColor="@color/gymeye_text_secondary"
+                android:layout_marginTop="@dimen/gymeye_space_8"
+                android:lineSpacingExtra="3dp"
+                android:text="识别器械后直接进入动作指导、训练记录和进度回顾。"
+                android:textColor="#DFFFFFFF"
                 android:textSize="@dimen/gymeye_text_body" />
-        </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnScan"
-            android:layout_width="match_parent"
-            android:layout_height="76dp"
-            android:layout_marginTop="@dimen/gymeye_space_24"
-            android:gravity="center"
-            android:text="开始扫描器械"
-            android:textAllCaps="false"
-            android:textColor="@color/gymeye_on_primary"
-            android:textSize="@dimen/gymeye_text_subtitle"
-            android:textStyle="bold"
-            app:backgroundTint="@color/gymeye_primary"
-            app:cornerRadius="@dimen/gymeye_radius_card"
-            app:elevation="3dp"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/gymeye_space_8"
-            app:rippleColor="@color/gymeye_accent_surface" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/gymeye_space_20"
+                android:layout_marginEnd="34dp"
+                android:background="@drawable/bg_main_scan_button"
+                android:gravity="center"
+                android:paddingStart="@dimen/gymeye_space_16"
+                android:paddingEnd="@dimen/gymeye_space_16"
+                android:text="开始扫描器械"
+                android:textColor="@color/gymeye_text_primary"
+                android:textSize="@dimen/gymeye_text_label"
+                android:textStyle="bold" />
+            </LinearLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gymeye_space_24"
+            android:layout_marginTop="@dimen/gymeye_space_20"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -78,6 +136,7 @@
                 android:layout_marginEnd="@dimen/gymeye_space_8"
                 android:layout_weight="1"
                 android:background="@drawable/bg_gymeye_card"
+                android:elevation="1dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="@dimen/gymeye_space_12">
@@ -113,6 +172,7 @@
                 android:layout_marginEnd="@dimen/gymeye_space_4"
                 android:layout_weight="1"
                 android:background="@drawable/bg_gymeye_card"
+                android:elevation="1dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="@dimen/gymeye_space_12">
@@ -147,6 +207,7 @@
                 android:layout_marginStart="@dimen/gymeye_space_8"
                 android:layout_weight="1"
                 android:background="@drawable/bg_gymeye_card"
+                android:elevation="1dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="@dimen/gymeye_space_12">
@@ -192,66 +253,142 @@
             android:columnCount="2"
             android:rowCount="2">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="86dp"
+                android:layout_height="102dp"
                 android:layout_columnWeight="1"
                 android:layout_marginEnd="@dimen/gymeye_space_8"
                 android:layout_marginBottom="@dimen/gymeye_space_12"
                 android:background="@drawable/bg_gymeye_card"
-                android:gravity="center"
-                android:text="扫描识别"
-                android:textColor="@color/gymeye_text_primary"
-                android:textSize="@dimen/gymeye_text_body"
-                android:textStyle="bold" />
+                android:elevation="1dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_16">
 
-            <TextView
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_main_quick_icon"
+                    android:gravity="center"
+                    android:text="SCAN"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:text="扫描识别"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnEquipmentKnowledge"
                 android:layout_width="0dp"
-                android:layout_height="86dp"
+                android:layout_height="102dp"
                 android:layout_columnWeight="1"
                 android:layout_marginStart="@dimen/gymeye_space_8"
                 android:layout_marginBottom="@dimen/gymeye_space_12"
                 android:background="@drawable/bg_gymeye_card"
                 android:clickable="true"
+                android:elevation="1dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:text="器械知识"
-                android:textColor="@color/gymeye_text_primary"
-                android:textSize="@dimen/gymeye_text_body"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_16">
 
-            <TextView
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_main_quick_icon"
+                    android:gravity="center"
+                    android:text="KB"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:text="器械知识"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnTrainingRecord"
                 android:layout_width="0dp"
-                android:layout_height="86dp"
+                android:layout_height="102dp"
                 android:layout_columnWeight="1"
                 android:layout_marginEnd="@dimen/gymeye_space_8"
                 android:background="@drawable/bg_gymeye_card"
                 android:clickable="true"
+                android:elevation="1dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:text="训练记录"
-                android:textColor="@color/gymeye_text_primary"
-                android:textSize="@dimen/gymeye_text_body"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_16">
 
-            <TextView
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_main_quick_icon"
+                    android:gravity="center"
+                    android:text="LOG"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:text="训练记录"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="86dp"
+                android:layout_height="102dp"
                 android:layout_columnWeight="1"
                 android:layout_marginStart="@dimen/gymeye_space_8"
                 android:background="@drawable/bg_gymeye_card"
                 android:clickable="true"
+                android:elevation="1dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:text="我的收藏"
-                android:textColor="@color/gymeye_text_primary"
-                android:textSize="@dimen/gymeye_text_body"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/gymeye_space_16">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_main_quick_icon"
+                    android:gravity="center"
+                    android:text="STAR"
+                    android:textColor="@color/gymeye_accent_dark"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gymeye_space_12"
+                    android:text="我的收藏"
+                    android:textColor="@color/gymeye_text_primary"
+                    android:textSize="@dimen/gymeye_text_body"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </GridLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -267,6 +404,5 @@
             app:cornerRadius="@dimen/gymeye_radius_button"
             app:strokeColor="@color/gymeye_border"
             app:strokeWidth="1dp" />
-
     </LinearLayout>
 </ScrollView>
