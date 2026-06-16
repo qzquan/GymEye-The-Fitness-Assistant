@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="@dimen/gymeye_radius_card" />
+    <gradient
+        android:angle="135"
+        android:startColor="#FF07090B"
+        android:centerColor="#FF2B3036"
+        android:endColor="#FF87909A" />
+</shape>

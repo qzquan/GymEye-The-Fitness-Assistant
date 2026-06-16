@@ -102,6 +102,58 @@
                 android:layout_height="wrap_content"
                 android:text="高级" />
         </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupMuscle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleAll"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="全部部位" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleBack"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="背部" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleChest"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="胸部" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleShoulders"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="肩部" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleArms"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="手臂" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMuscleLegs"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="腿部" />
+        </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 
     <TextView

@@ -45,3 +45,6 @@ Thumbs.db
 .cursor/
 .claude/settings.local.json
 .claude/settings.local.json
+
+/preview-*.png
+/preview_*.png

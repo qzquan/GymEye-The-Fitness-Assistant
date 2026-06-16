@@ -24,6 +24,7 @@ public class EquipmentListActivity extends AppCompatActivity {
     private EquipmentListAdapter adapter;
     private EditText etSearchEquipment;
     private ChipGroup chipGroupDifficulty;
+    private ChipGroup chipGroupMuscle;
     private TextView tvEmptyEquipment;
 
     @Override
@@ -35,6 +36,7 @@ public class EquipmentListActivity extends AppCompatActivity {
 
         etSearchEquipment = findViewById(R.id.etSearchEquipment);
         chipGroupDifficulty = findViewById(R.id.chipGroupDifficulty);
+        chipGroupMuscle = findViewById(R.id.chipGroupMuscle);
         tvEmptyEquipment = findViewById(R.id.tvEmptyEquipment);
 
         RecyclerView rv = findViewById(R.id.rvEquipmentList);
@@ -65,6 +67,7 @@ public class EquipmentListActivity extends AppCompatActivity {
         });
 
         chipGroupDifficulty.setOnCheckedChangeListener((group, checkedId) -> applyFilters());
+        chipGroupMuscle.setOnCheckedChangeListener((group, checkedId) -> applyFilters());
         applyFilters();
     }
 
@@ -73,10 +76,14 @@ public class EquipmentListActivity extends AppCompatActivity {
                 ? ""
                 : etSearchEquipment.getText().toString().trim();
         String difficulty = getSelectedDifficulty();
+        String muscle = getSelectedMuscle();
         List<Equipment> filtered = new ArrayList<>();
 
         for (Equipment equipment : allEquipment) {
             if (!TextUtils.isEmpty(difficulty) && !difficulty.equals(equipment.getDifficulty())) {
+                continue;
+            }
+            if (!TextUtils.isEmpty(muscle) && !matchesMuscleFilter(equipment, muscle)) {
                 continue;
             }
             if (!TextUtils.isEmpty(query) && !matchesQuery(equipment, query)) {
@@ -95,6 +102,40 @@ public class EquipmentListActivity extends AppCompatActivity {
         if (checkedId == R.id.chipIntermediate) return "中级";
         if (checkedId == R.id.chipAdvanced) return "高级";
         return "";
+    }
+
+    private String getSelectedMuscle() {
+        int checkedId = chipGroupMuscle.getCheckedChipId();
+        if (checkedId == R.id.chipMuscleBack) return "back";
+        if (checkedId == R.id.chipMuscleChest) return "chest";
+        if (checkedId == R.id.chipMuscleShoulders) return "shoulders";
+        if (checkedId == R.id.chipMuscleArms) return "arms";
+        if (checkedId == R.id.chipMuscleLegs) return "legs";
+        return "";
+    }
+
+    private boolean matchesMuscleFilter(Equipment equipment, String muscle) {
+        if ("arms".equals(muscle)) {
+            return hasAnyMuscle(equipment, "biceps", "triceps", "forearms");
+        }
+        if ("legs".equals(muscle)) {
+            return hasAnyMuscle(equipment, "quadriceps", "hamstrings", "glutes", "calves");
+        }
+        return hasAnyMuscle(equipment, muscle);
+    }
+
+    private boolean hasAnyMuscle(Equipment equipment, String... muscles) {
+        for (String muscle : muscles) {
+            if (hasMuscle(equipment.getTargetMuscles(), muscle)
+                    || hasMuscle(equipment.getSecondaryMuscles(), muscle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasMuscle(List<String> muscles, String target) {
+        return muscles != null && muscles.contains(target);
     }
 
     private boolean matchesQuery(Equipment equipment, String query) {
