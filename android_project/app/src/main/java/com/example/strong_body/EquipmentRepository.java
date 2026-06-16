@@ -303,6 +303,30 @@ public class EquipmentRepository {
             ),
             0
         ));
+
+        EQUIPMENT_DATABASE.put("肱三头下压", new Equipment(
+            "triceps_pushdown",
+            "肱三头下压",
+            "肱三头下压主要训练上臂后侧肱三头肌，常使用绳索或直杆在龙门架上完成。",
+            "https://example.com/videos/triceps_pushdown.mp4",
+            Arrays.asList("triceps"),
+            Arrays.asList("forearms"),
+            "初级",
+            "1. 上臂固定在身体两侧\n2. 下压时不要耸肩或身体前压\n3. 回放时控制速度，保持肱三头肌张力",
+            Arrays.asList(
+                new Exercise("ex_triceps_pushdown_1", "标准肱三头下压", "双手握住把手向下伸展手臂，集中训练肱三头肌。",
+                    Arrays.asList("站在绳索滑轮前，双脚与髋同宽", "上臂贴近身体两侧，肘部固定", "向下压至手臂接近伸直", "缓慢回到起始位置，保持肘部稳定"),
+                    Arrays.asList("肘部前后移动", "身体下压借力", "回放过快失去控制"),
+                    "肘关节不适时降低重量，并避免完全锁死手肘",
+                    Arrays.asList("新手", "进阶"), "初级"),
+                new Exercise("ex_triceps_pushdown_2", "绳索肱三头下压", "使用绳索把手，在底部向两侧分开以增强肱三头肌收缩。",
+                    Arrays.asList("双手握住绳索两端，身体微微前倾", "保持上臂稳定并向下压", "底部将绳索向身体两侧分开", "控制绳索缓慢回到起始位置"),
+                    Arrays.asList("手腕过度弯折", "肩膀参与过多", "重量过大导致动作变形"),
+                    "优先使用可控重量，避免用肩部和躯干代偿",
+                    Arrays.asList("进阶"), "中级")
+            ),
+            0
+        ));
     }
 
     /**
@@ -341,7 +365,8 @@ public class EquipmentRepository {
             EQUIPMENT_DATABASE.get("蝴蝶机夹胸"),
             EQUIPMENT_DATABASE.get("卧推"),
             EQUIPMENT_DATABASE.get("哑铃飞鸟"),
-            EQUIPMENT_DATABASE.get("肱二头肌弯举")
+            EQUIPMENT_DATABASE.get("肱二头肌弯举"),
+            EQUIPMENT_DATABASE.get("肱三头下压")
         );
     }
 
