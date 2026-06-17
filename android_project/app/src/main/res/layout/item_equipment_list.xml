@@ -7,8 +7,8 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="@dimen/gymeye_radius_card"
+    app:cardElevation="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="138dp"
             android:background="@drawable/bg_equipment_media_thumb">
 
             <ImageView
@@ -40,7 +40,7 @@
             <TextView
                 android:id="@+id/tvDifficulty"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="30dp"
                 android:layout_gravity="top|end"
                 android:layout_margin="12dp"
                 android:gravity="center"

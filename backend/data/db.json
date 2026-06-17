@@ -213,26 +213,17 @@
       "sex": "male",
       "height_cm": 175,
       "weight_kg": 70,
-      "goal": "muscle_gain",
-      "level": "beginner",
-      "weekly_sessions": 3,
+      "goal": "fat_loss",
+      "level": "advanced",
+      "weekly_sessions": 7,
       "available_equipment_ids": [
-        "leg_press",
-        "shoulder_press",
-        "leg_extension",
-        "leg_curl",
-        "lat_pulldown",
-        "seated_row",
-        "assisted_pull_up",
-        "pec_deck",
-        "bench_press",
         "dumbbell_fly",
         "biceps_curl",
         "triceps_pushdown",
         "treadmill"
       ],
       "created_at": "2026-06-17T06:31:52.126Z",
-      "updated_at": "2026-06-17T06:31:52.126Z"
+      "updated_at": "2026-06-17T07:23:46.401Z"
     }
   ],
   "training_plans": [
@@ -311,6 +302,160 @@
         "updatedAt": "2026-06-17T06:31:52.126Z"
       },
       "created_at": "2026-06-17T06:31:52.145Z"
+    },
+    {
+      "id": 2,
+      "user_id": 8,
+      "title": "今日训练计划：胸 + 三头",
+      "weekly_summary": "建议每周训练 3 次，按胸推、背拉、腿肩循环安排。",
+      "rationale": "增肌目标优先选择胸、肩、手臂等推类力量动作，并按训练水平调整组数和次数。当前可用器械能够覆盖本次训练目标。",
+      "items": [
+        {
+          "equipmentId": "bench_press",
+          "equipmentName": "卧推",
+          "actionName": "卧推",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "chest",
+            "triceps",
+            "shoulders"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        },
+        {
+          "equipmentId": "pec_deck",
+          "equipmentName": "蝴蝶机夹胸",
+          "actionName": "蝴蝶机夹胸",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "chest",
+            "shoulders"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        },
+        {
+          "equipmentId": "triceps_pushdown",
+          "equipmentName": "肱三头下压",
+          "actionName": "绳索下压",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "triceps",
+            "forearms"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        }
+      ],
+      "profile_snapshot": {
+        "id": 1,
+        "sex": "male",
+        "heightCm": 175,
+        "weightKg": 70,
+        "goal": "muscle_gain",
+        "level": "beginner",
+        "weeklySessions": 3,
+        "availableEquipmentIds": [
+          "leg_press",
+          "shoulder_press",
+          "leg_extension",
+          "leg_curl",
+          "lat_pulldown",
+          "seated_row",
+          "assisted_pull_up",
+          "pec_deck",
+          "bench_press",
+          "dumbbell_fly",
+          "biceps_curl",
+          "triceps_pushdown",
+          "treadmill"
+        ],
+        "createdAt": "2026-06-17T06:31:52.126Z",
+        "updatedAt": "2026-06-17T06:31:52.126Z"
+      },
+      "created_at": "2026-06-17T07:23:33.850Z"
+    },
+    {
+      "id": 3,
+      "user_id": 8,
+      "title": "今日训练计划：全身循环 + 有氧",
+      "weekly_summary": "建议每周训练 7 次，力量循环和有氧交替，提高总消耗。",
+      "rationale": "减脂目标优先组合大肌群动作和有氧项目，提升训练消耗并兼顾基础力量。部分目标器械不可用，系统已从当前可用器械中选择最接近的替代动作。",
+      "items": [
+        {
+          "equipmentId": "treadmill",
+          "equipmentName": "跑步机",
+          "actionName": "跑步机有氧",
+          "sets": null,
+          "reps": null,
+          "durationMinutes": 25,
+          "targetMuscles": [
+            "cardio"
+          ],
+          "note": "放在力量训练后完成，保持中等强度。"
+        },
+        {
+          "equipmentId": "dumbbell_fly",
+          "equipmentName": "哑铃飞鸟",
+          "actionName": "哑铃侧平举",
+          "sets": 3,
+          "reps": 15,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "shoulders",
+            "traps"
+          ],
+          "note": "组间休息控制在 45-60 秒，保持训练密度。"
+        },
+        {
+          "equipmentId": "biceps_curl",
+          "equipmentName": "肱二头肌弯举",
+          "actionName": "肱二头肌弯举",
+          "sets": 3,
+          "reps": 15,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "biceps",
+            "forearms"
+          ],
+          "note": "组间休息控制在 45-60 秒，保持训练密度。"
+        },
+        {
+          "equipmentId": "triceps_pushdown",
+          "equipmentName": "肱三头下压",
+          "actionName": "绳索下压",
+          "sets": 3,
+          "reps": 15,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "triceps",
+            "forearms"
+          ],
+          "note": "组间休息控制在 45-60 秒，保持训练密度。"
+        }
+      ],
+      "profile_snapshot": {
+        "id": 1,
+        "sex": "male",
+        "heightCm": 175,
+        "weightKg": 70,
+        "goal": "fat_loss",
+        "level": "advanced",
+        "weeklySessions": 7,
+        "availableEquipmentIds": [
+          "dumbbell_fly",
+          "biceps_curl",
+          "triceps_pushdown",
+          "treadmill"
+        ],
+        "createdAt": "2026-06-17T06:31:52.126Z",
+        "updatedAt": "2026-06-17T07:23:46.401Z"
+      },
+      "created_at": "2026-06-17T07:23:46.459Z"
     }
   ],
   "counters": {
@@ -320,6 +465,6 @@
     "workout_logs": 7,
     "exercise_videos": 3,
     "training_profiles": 1,
-    "training_plans": 1
+    "training_plans": 3
   }
 }

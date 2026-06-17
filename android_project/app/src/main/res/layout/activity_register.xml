@@ -4,11 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.strong_body.MosaicBackgroundView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="false"
-        android:focusable="false"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/gymeye_gym_hero" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC080B0F"
         android:importantForAccessibility="no" />
 
     <ScrollView
@@ -34,7 +41,7 @@
             android:layout_marginTop="32dp"
             android:gravity="center_horizontal"
             android:text="Gym-Eye"
-            android:textColor="@color/login_text_primary"
+            android:textColor="@color/gymeye_on_primary"
             android:textSize="40sp"
             android:textStyle="bold|italic" />
 
@@ -46,7 +53,7 @@
             android:gravity="end"
             android:paddingStart="48dp"
             android:text="保持锻炼！"
-            android:textColor="@color/login_text_muted"
+            android:textColor="#CCFFFFFF"
             android:textSize="22sp"
             android:textStyle="italic" />
 
@@ -61,7 +68,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="创建新账户"
-            android:textColor="@color/login_text_primary"
+            android:textColor="@color/gymeye_on_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
 

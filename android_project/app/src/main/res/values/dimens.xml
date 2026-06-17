@@ -14,10 +14,10 @@
     <dimen name="gymeye_section_gap">20dp</dimen>
     <dimen name="gymeye_card_gap">12dp</dimen>
 
-    <dimen name="gymeye_radius_input">12dp</dimen>
-    <dimen name="gymeye_radius_button">14dp</dimen>
-    <dimen name="gymeye_radius_card">16dp</dimen>
-    <dimen name="gymeye_radius_panel">24dp</dimen>
+    <dimen name="gymeye_radius_input">10dp</dimen>
+    <dimen name="gymeye_radius_button">10dp</dimen>
+    <dimen name="gymeye_radius_card">8dp</dimen>
+    <dimen name="gymeye_radius_panel">18dp</dimen>
     <dimen name="gymeye_radius_tag">999dp</dimen>
 
     <dimen name="gymeye_button_height">52dp</dimen>

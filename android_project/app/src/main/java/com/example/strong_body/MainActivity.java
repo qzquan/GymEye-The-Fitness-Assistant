@@ -27,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ScanActivity.class);
             startActivity(intent);
         });
+        View btnScanQuick = findViewById(R.id.btnScanQuick);
+        if (btnScanQuick != null) {
+            btnScanQuick.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ScanActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // 2. 器械知识快捷入口
         findViewById(R.id.btnEquipmentKnowledge).setOnClickListener(v -> {

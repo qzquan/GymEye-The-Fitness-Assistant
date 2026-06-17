@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="24dp"
-        android:background="@android:color/white">
+        android:background="@drawable/bg_bottom_sheet_surface">
 
         <TextView
             android:id="@+id/tvTitle"

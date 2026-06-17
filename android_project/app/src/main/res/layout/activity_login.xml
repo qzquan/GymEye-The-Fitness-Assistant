@@ -5,11 +5,18 @@
     android:layout_height="match_parent"
     android:background="@color/gymeye_background">
 
-    <com.example.strong_body.MosaicBackgroundView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="false"
-        android:focusable="false"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/gymeye_gym_hero" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC080B0F"
         android:importantForAccessibility="no" />
 
     <ScrollView
