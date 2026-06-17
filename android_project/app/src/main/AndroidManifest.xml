@@ -31,6 +31,7 @@
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".EquipmentDetailActivity" android:exported="false" />
         <activity android:name=".EquipmentListActivity" android:exported="false" />
+        <activity android:name=".TrainingPlanActivity" android:exported="false" />
 
         <activity android:name=".StatisticsActivity" android:exported="false" />
 

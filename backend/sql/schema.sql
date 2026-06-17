@@ -29,3 +29,33 @@ CREATE TABLE IF NOT EXISTS history (
   CONSTRAINT fk_history_equipment FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS training_profiles (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL UNIQUE,
+  sex ENUM('male', 'female', 'other') NOT NULL,
+  height_cm DECIMAL(5,2) NOT NULL,
+  weight_kg DECIMAL(5,2) NOT NULL,
+  goal ENUM('muscle_gain', 'fat_loss', 'body_shaping', 'rehab', 'strength') NOT NULL,
+  level ENUM('beginner', 'normal', 'advanced') NOT NULL,
+  weekly_sessions TINYINT UNSIGNED NOT NULL,
+  available_equipment_ids JSON NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_training_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS training_plans (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  weekly_summary VARCHAR(1024) NOT NULL,
+  rationale TEXT NOT NULL,
+  items JSON NOT NULL,
+  profile_snapshot JSON NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_training_plans_user_created (user_id, created_at),
+  CONSTRAINT fk_training_plans_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+

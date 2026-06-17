@@ -65,6 +65,15 @@ Legacy MySQL scripts are still present in the repo, but the active runtime path 
 
 History endpoints accept JWT via `Authorization: Bearer <token>`. For compatibility, `POST /api/history/add` and `GET /api/history/list` still accept `userId`.
 
+### Training Plan
+
+- `GET /api/training-plan/profile`
+- `PUT /api/training-plan/profile`
+- `POST /api/training-plan/generate`
+- `GET /api/training-plan/current`
+
+Training plan endpoints require JWT auth. The generator uses a rule-based strategy from user profile, training goal, level, weekly sessions, and available equipment tags.
+
 ## Notes
 
 - Equipment write endpoints require JWT auth.

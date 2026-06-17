@@ -48,6 +48,13 @@
       "password_hash": "$2a$10$dhtMv7oNopYmTF9/sKCgRu4BiZPoqORJsZLhSBZjTVBS8BpnGPBX6",
       "nickname": "123456",
       "created_at": "2026-06-16T15:15:58.349Z"
+    },
+    {
+      "id": 8,
+      "email": "test@gymeye.local",
+      "password_hash": "$2a$10$TwstZqbkhdyVhAr3NdDL5eMJ3lvOr8nSiIEMo8wRUlvNhfYAAjxP6",
+      "nickname": "测试账号",
+      "created_at": "2026-06-17T06:18:14.881Z"
     }
   ],
   "equipment": [
@@ -199,11 +206,120 @@
       "created_at": "2026-06-09T12:00:00.000Z"
     }
   ],
+  "training_profiles": [
+    {
+      "id": 1,
+      "user_id": 8,
+      "sex": "male",
+      "height_cm": 175,
+      "weight_kg": 70,
+      "goal": "muscle_gain",
+      "level": "beginner",
+      "weekly_sessions": 3,
+      "available_equipment_ids": [
+        "leg_press",
+        "shoulder_press",
+        "leg_extension",
+        "leg_curl",
+        "lat_pulldown",
+        "seated_row",
+        "assisted_pull_up",
+        "pec_deck",
+        "bench_press",
+        "dumbbell_fly",
+        "biceps_curl",
+        "triceps_pushdown",
+        "treadmill"
+      ],
+      "created_at": "2026-06-17T06:31:52.126Z",
+      "updated_at": "2026-06-17T06:31:52.126Z"
+    }
+  ],
+  "training_plans": [
+    {
+      "id": 1,
+      "user_id": 8,
+      "title": "今日训练计划：胸 + 三头",
+      "weekly_summary": "建议每周训练 3 次，按胸推、背拉、腿肩循环安排。",
+      "rationale": "增肌目标优先选择胸、肩、手臂等推类力量动作，并按训练水平调整组数和次数。当前可用器械能够覆盖本次训练目标。",
+      "items": [
+        {
+          "equipmentId": "bench_press",
+          "equipmentName": "卧推",
+          "actionName": "卧推",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "chest",
+            "triceps",
+            "shoulders"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        },
+        {
+          "equipmentId": "pec_deck",
+          "equipmentName": "蝴蝶机夹胸",
+          "actionName": "蝴蝶机夹胸",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "chest",
+            "shoulders"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        },
+        {
+          "equipmentId": "triceps_pushdown",
+          "equipmentName": "肱三头下压",
+          "actionName": "绳索下压",
+          "sets": 3,
+          "reps": 12,
+          "durationMinutes": null,
+          "targetMuscles": [
+            "triceps",
+            "forearms"
+          ],
+          "note": "每组最后 2 次应有挑战感，组间休息 60-90 秒。"
+        }
+      ],
+      "profile_snapshot": {
+        "id": 1,
+        "sex": "male",
+        "heightCm": 175,
+        "weightKg": 70,
+        "goal": "muscle_gain",
+        "level": "beginner",
+        "weeklySessions": 3,
+        "availableEquipmentIds": [
+          "leg_press",
+          "shoulder_press",
+          "leg_extension",
+          "leg_curl",
+          "lat_pulldown",
+          "seated_row",
+          "assisted_pull_up",
+          "pec_deck",
+          "bench_press",
+          "dumbbell_fly",
+          "biceps_curl",
+          "triceps_pushdown",
+          "treadmill"
+        ],
+        "createdAt": "2026-06-17T06:31:52.126Z",
+        "updatedAt": "2026-06-17T06:31:52.126Z"
+      },
+      "created_at": "2026-06-17T06:31:52.145Z"
+    }
+  ],
   "counters": {
-    "users": 7,
+    "users": 8,
     "equipment": 3,
     "history": 0,
     "workout_logs": 7,
-    "exercise_videos": 3
+    "exercise_videos": 3,
+    "training_profiles": 1,
+    "training_plans": 1
   }
 }

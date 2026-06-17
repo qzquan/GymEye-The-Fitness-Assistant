@@ -57,13 +57,51 @@ async function main() {
     headers: { Authorization: `Bearer ${token}` }
   });
 
+  const missingProfile = await request('/api/training-plan/profile', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (missingProfile.profile !== null) {
+    throw new Error('Expected a new smoke user to have no training profile');
+  }
+
+  await request('/api/training-plan/profile', {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      sex: 'other',
+      heightCm: 175,
+      weightKg: 70,
+      goal: 'muscle_gain',
+      level: 'beginner',
+      weeklySessions: 3,
+      availableEquipmentIds: ['bench_press', 'pec_deck', 'triceps_pushdown', 'treadmill']
+    })
+  });
+
+  const generatedPlan = await request('/api/training-plan/generate', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!generatedPlan.plan || !Array.isArray(generatedPlan.plan.items) || generatedPlan.plan.items.length === 0) {
+    throw new Error('Training plan generation failed');
+  }
+
+  const currentPlan = await request('/api/training-plan/current', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!currentPlan.plan || currentPlan.plan.id !== generatedPlan.plan.id) {
+    throw new Error('Current training plan mismatch');
+  }
+
   console.log(
     JSON.stringify(
       {
         ok: true,
         userId: login.userId,
         equipmentSample: firstEquipment.name,
-        historyCount: Array.isArray(history.data) ? history.data.length : 0
+        historyCount: Array.isArray(history.data) ? history.data.length : 0,
+        trainingPlanTitle: currentPlan.plan.title,
+        trainingPlanItems: currentPlan.plan.items.length
       },
       null,
       2

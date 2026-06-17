@@ -40,6 +40,10 @@ public final class GymEyeApiClient {
         return request("POST", path, token, json, true);
     }
 
+    public static HttpResult putJson(String path, String token, JSONObject json) throws Exception {
+        return request("PUT", path, token, json, true);
+    }
+
     private static HttpResult request(String method, String path, String token, JSONObject jsonBody, boolean writeBody)
             throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(ApiConfig.BASE_URL + path).openConnection();

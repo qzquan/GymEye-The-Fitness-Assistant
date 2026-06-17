@@ -357,6 +357,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnTrainingPlan"
                 android:layout_width="0dp"
                 android:layout_height="102dp"
                 android:layout_columnWeight="1"
@@ -375,7 +376,7 @@
                     android:layout_height="34dp"
                     android:background="@drawable/bg_main_quick_icon"
                     android:gravity="center"
-                    android:text="STAR"
+                    android:text="PLAN"
                     android:textColor="@color/gymeye_accent_dark"
                     android:textSize="10sp"
                     android:textStyle="bold" />
@@ -384,7 +385,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/gymeye_space_12"
-                    android:text="我的收藏"
+                    android:text="训练计划"
                     android:textColor="@color/gymeye_text_primary"
                     android:textSize="@dimen/gymeye_text_body"
                     android:textStyle="bold" />

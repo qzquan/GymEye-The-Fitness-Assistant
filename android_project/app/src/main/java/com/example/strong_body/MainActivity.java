@@ -4,8 +4,10 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,7 +41,17 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // 4. 退出登录按钮 (保留了你原本的 AuthAccountStorage 逻辑)
+        // 4. 个性化训练计划入口
+        findViewById(R.id.btnTrainingPlan).setOnClickListener(v -> {
+            if (TextUtils.isEmpty(AuthAccountStorage.getSessionToken(this))) {
+                Toast.makeText(this, "请先登录后生成训练计划", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(MainActivity.this, TrainingPlanActivity.class);
+            startActivity(intent);
+        });
+
+        // 5. 退出登录按钮 (保留了你原本的 AuthAccountStorage 逻辑)
         MaterialButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
             // 清除登录状态

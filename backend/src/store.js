@@ -18,12 +18,16 @@ const defaultState = {
   history: [],
   workout_logs: [],
   exercise_videos: [],
+  training_profiles: [],
+  training_plans: [],
   counters: {
     users: 0,
     equipment: 0,
     history: 0,
     workout_logs: 0,
-    exercise_videos: 0
+    exercise_videos: 0,
+    training_profiles: 0,
+    training_plans: 0
   }
 };
 
@@ -98,7 +102,15 @@ async function normalizeState(state) {
     }
   };
 
-  for (const key of ['users', 'equipment', 'history', 'workout_logs', 'exercise_videos']) {
+  for (const key of [
+    'users',
+    'equipment',
+    'history',
+    'workout_logs',
+    'exercise_videos',
+    'training_profiles',
+    'training_plans'
+  ]) {
     if (!Array.isArray(normalized[key])) {
       normalized[key] = [];
       changed = true;
@@ -114,7 +126,9 @@ async function normalizeState(state) {
     equipment: maxId(normalized.equipment),
     history: maxId(normalized.history),
     workout_logs: maxId(normalized.workout_logs || []),
-    exercise_videos: maxId(normalized.exercise_videos || [])
+    exercise_videos: maxId(normalized.exercise_videos || []),
+    training_profiles: maxId(normalized.training_profiles || []),
+    training_plans: maxId(normalized.training_plans || [])
   };
   for (const [key, value] of Object.entries(counterTargets)) {
     if (!Number.isInteger(normalized.counters[key]) || normalized.counters[key] < value) {
@@ -585,5 +599,68 @@ export async function deleteExerciseVideo(id) {
     const before = (state.exercise_videos || []).length;
     state.exercise_videos = (state.exercise_videos || []).filter(item => item.id !== id);
     return (state.exercise_videos || []).length !== before;
+  });
+}
+
+/* ── Training Plan ─────────────────────────────────────── */
+
+export async function getTrainingProfileByUserId(userId) {
+  const state = await readState();
+  return clone((state.training_profiles || []).find(item => item.user_id === userId) || null);
+}
+
+export async function saveTrainingProfile(userId, payload) {
+  return withStateMutation(state => {
+    if (!Array.isArray(state.training_profiles)) {
+      state.training_profiles = [];
+    }
+    const now = new Date().toISOString();
+    const index = state.training_profiles.findIndex(item => item.user_id === userId);
+    if (index >= 0) {
+      state.training_profiles[index] = {
+        ...state.training_profiles[index],
+        ...payload,
+        updated_at: now
+      };
+      return clone(state.training_profiles[index]);
+    }
+
+    const record = {
+      id: nextId(state, 'training_profiles'),
+      user_id: userId,
+      ...payload,
+      created_at: now,
+      updated_at: now
+    };
+    state.training_profiles.push(record);
+    return clone(record);
+  });
+}
+
+export async function getCurrentTrainingPlan(userId) {
+  const state = await readState();
+  const rows = (state.training_plans || [])
+    .filter(item => item.user_id === userId)
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+  return clone(rows[0] || null);
+}
+
+export async function createTrainingPlan(userId, payload) {
+  return withStateMutation(state => {
+    if (!Array.isArray(state.training_plans)) {
+      state.training_plans = [];
+    }
+    const record = {
+      id: nextId(state, 'training_plans'),
+      user_id: userId,
+      title: payload.title,
+      weekly_summary: payload.weekly_summary,
+      rationale: payload.rationale,
+      items: payload.items,
+      profile_snapshot: payload.profile_snapshot,
+      created_at: new Date().toISOString()
+    };
+    state.training_plans.push(record);
+    return clone(record);
   });
 }
