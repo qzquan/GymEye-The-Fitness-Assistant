@@ -18,9 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -76,11 +76,14 @@ public class TrainingPlanActivity extends AppCompatActivity {
     private MaterialButton btnSaveProfile;
     private MaterialButton btnRegenerate;
     private MaterialButton btnEditProfile;
+    private MaterialButton btnStartPlan;
     private TextView tvPlanTitle;
     private TextView tvWeeklySummary;
     private TextView tvRationale;
+    private TextView tvPlanItemCount;
     private TextView tvPlanEmpty;
     private LinearLayout layoutPlanItems;
+    private LinearLayout bottomPlanCta;
 
     private JSONObject currentProfile;
     private String token;
@@ -132,11 +135,14 @@ public class TrainingPlanActivity extends AppCompatActivity {
         btnSaveProfile = findViewById(R.id.btnSaveProfile);
         btnRegenerate = findViewById(R.id.btnRegenerate);
         btnEditProfile = findViewById(R.id.btnEditProfile);
+        btnStartPlan = findViewById(R.id.btnStartPlan);
         tvPlanTitle = findViewById(R.id.tvPlanTitle);
         tvWeeklySummary = findViewById(R.id.tvWeeklySummary);
         tvRationale = findViewById(R.id.tvRationale);
+        tvPlanItemCount = findViewById(R.id.tvPlanItemCount);
         tvPlanEmpty = findViewById(R.id.tvPlanEmpty);
         layoutPlanItems = findViewById(R.id.layoutPlanItems);
+        bottomPlanCta = findViewById(R.id.bottomPlanCta);
     }
 
     private void setupChoiceGroups() {
@@ -252,6 +258,10 @@ public class TrainingPlanActivity extends AppCompatActivity {
         btnSaveProfile.setOnClickListener(v -> saveProfileAndGenerate());
         btnRegenerate.setOnClickListener(v -> generatePlan());
         btnEditProfile.setOnClickListener(v -> showProfileForm(currentProfile));
+        if (btnStartPlan != null) {
+            btnStartPlan.setOnClickListener(v ->
+                    Toast.makeText(this, "请按今日动作顺序训练，并在训练记录中打卡", Toast.LENGTH_SHORT).show());
+        }
     }
 
     private void setStep(int step) {
@@ -336,6 +346,9 @@ public class TrainingPlanActivity extends AppCompatActivity {
         setLoading(false);
         planContent.setVisibility(View.GONE);
         profileForm.setVisibility(View.VISIBLE);
+        if (bottomPlanCta != null) {
+            bottomPlanCta.setVisibility(View.GONE);
+        }
 
         if (profile == null) {
             etHeight.setText("");
@@ -506,13 +519,25 @@ public class TrainingPlanActivity extends AppCompatActivity {
         tvWeeklySummary.setText(plan.optString("weeklySummary", ""));
         tvRationale.setText(plan.optString("rationale", ""));
         layoutPlanItems.removeAllViews();
+        if (bottomPlanCta != null) {
+            bottomPlanCta.setVisibility(View.GONE);
+        }
 
         JSONArray items = plan.optJSONArray("items");
         if (items == null || items.length() == 0) {
+            if (tvPlanItemCount != null) {
+                tvPlanItemCount.setText("暂无动作，重新生成试试");
+            }
             tvPlanEmpty.setVisibility(View.VISIBLE);
             return;
         }
+        if (tvPlanItemCount != null) {
+            tvPlanItemCount.setText("共 " + items.length() + " 项，按顺序完成");
+        }
         tvPlanEmpty.setVisibility(View.GONE);
+        if (bottomPlanCta != null) {
+            bottomPlanCta.setVisibility(View.VISIBLE);
+        }
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.optJSONObject(i);
             if (item != null) {
@@ -522,11 +547,13 @@ public class TrainingPlanActivity extends AppCompatActivity {
     }
 
     private View createPlanItemCard(JSONObject item, int index) {
-        CardView card = new CardView(this);
+        MaterialCardView card = new MaterialCardView(this);
         card.setCardElevation(dp(1));
-        card.setRadius(dp(8));
+        card.setRadius(dp(16));
         card.setUseCompatPadding(false);
         card.setCardBackgroundColor(Color.WHITE);
+        card.setStrokeWidth(dp(1));
+        card.setStrokeColor(Color.parseColor("#EEF0F3"));
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -539,15 +566,15 @@ public class TrainingPlanActivity extends AppCompatActivity {
 
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setGravity(Gravity.TOP);
 
         TextView badge = new TextView(this);
         badge.setText(String.format(Locale.getDefault(), "%02d", index));
         badge.setGravity(Gravity.CENTER);
         badge.setTextColor(Color.WHITE);
-        badge.setTextSize(12);
+        badge.setTextSize(13);
         badge.setTypeface(null, Typeface.BOLD);
-        badge.setBackgroundResource(R.drawable.bg_plan_step_active);
+        badge.setBackgroundResource(R.drawable.bg_plan_badge);
         LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(dp(42), dp(28));
         badgeParams.rightMargin = dp(10);
         header.addView(badge, badgeParams);
@@ -555,21 +582,23 @@ public class TrainingPlanActivity extends AppCompatActivity {
         TextView title = new TextView(this);
         title.setText(item.optString("equipmentName", "器械") + " · "
                 + item.optString("actionName", "训练动作"));
-        title.setTextColor(Color.parseColor("#FF111827"));
-        title.setTextSize(16);
+        title.setTextColor(Color.parseColor("#111827"));
+        title.setTextSize(17);
         title.setTypeface(null, Typeface.BOLD);
-        title.setMaxLines(2);
+        title.setMaxLines(1);
         title.setEllipsize(TextUtils.TruncateAt.END);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         box.addView(header);
 
         TextView prescription = new TextView(this);
         prescription.setText(formatPrescription(item));
-        prescription.setTextColor(Color.parseColor("#FF008C7A"));
-        prescription.setTextSize(14);
+        prescription.setTextColor(Color.parseColor("#0E8F83"));
+        prescription.setTextSize(15);
         prescription.setTypeface(null, Typeface.BOLD);
-        prescription.setBackgroundResource(R.drawable.bg_sport_card_light);
-        prescription.setPadding(dp(12), dp(8), dp(12), dp(8));
+        prescription.setGravity(Gravity.CENTER_VERTICAL);
+        prescription.setMinHeight(dp(36));
+        prescription.setBackgroundResource(R.drawable.bg_plan_dose_chip);
+        prescription.setPadding(dp(12), 0, dp(12), 0);
         LinearLayout.LayoutParams prescriptionParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -577,10 +606,12 @@ public class TrainingPlanActivity extends AppCompatActivity {
         box.addView(prescription, prescriptionParams);
 
         TextView muscles = new TextView(this);
-        muscles.setText("目标肌群: " + formatMuscles(item.optJSONArray("targetMuscles")));
-        muscles.setTextColor(Color.parseColor("#FF1E88E5"));
-        muscles.setTextSize(13);
+        muscles.setText("目标肌群：" + formatMuscles(item.optJSONArray("targetMuscles")));
+        muscles.setTextColor(Color.parseColor("#0E8F83"));
+        muscles.setTextSize(14);
         muscles.setTypeface(null, Typeface.BOLD);
+        muscles.setMaxLines(1);
+        muscles.setEllipsize(TextUtils.TruncateAt.END);
         LinearLayout.LayoutParams musclesParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -589,9 +620,11 @@ public class TrainingPlanActivity extends AppCompatActivity {
 
         TextView note = new TextView(this);
         note.setText(item.optString("note", ""));
-        note.setTextColor(Color.parseColor("#FF56616D"));
+        note.setTextColor(Color.parseColor("#6B7280"));
         note.setTextSize(13);
-        note.setLineSpacing(0, 1.2f);
+        note.setMaxLines(2);
+        note.setEllipsize(TextUtils.TruncateAt.END);
+        note.setLineSpacing(dp(2), 1.0f);
         LinearLayout.LayoutParams noteParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -601,10 +634,10 @@ public class TrainingPlanActivity extends AppCompatActivity {
         Equipment equipment = EquipmentRepository.getEquipmentById(item.optString("equipmentId", ""));
         if (equipment != null) {
             TextView hint = new TextView(this);
-            hint.setText("点击查看器械详情");
+            hint.setText("查看器械详情  >");
             hint.setGravity(Gravity.END);
-            hint.setTextColor(Color.parseColor("#FF008C7A"));
-            hint.setTextSize(12);
+            hint.setTextColor(Color.parseColor("#0E8F83"));
+            hint.setTextSize(13);
             hint.setTypeface(null, Typeface.BOLD);
             LinearLayout.LayoutParams hintParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

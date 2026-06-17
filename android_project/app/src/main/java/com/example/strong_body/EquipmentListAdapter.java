@@ -1,6 +1,5 @@
 package com.example.strong_body;
 
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +51,12 @@ public class EquipmentListAdapter extends RecyclerView.Adapter<EquipmentListAdap
 
         holder.tvName.setText(equipment.getName());
         holder.tvDesc.setText(equipment.getDescription());
+        holder.tvMeta.setText(buildMetaText(equipment));
         holder.tvDifficulty.setText(equipment.getDifficulty());
-        holder.tvDifficulty.setBackground(createDifficultyBackground(equipment.getDifficulty()));
+        holder.tvDifficulty.setBackgroundResource(getDifficultyBackgroundRes(equipment.getDifficulty()));
 
         List<String> muscles = equipment.getTargetMuscles();
-        StringBuilder sb = new StringBuilder("目标肌群: ");
+        StringBuilder sb = new StringBuilder("目标肌群：");
         for (int i = 0; i < muscles.size(); i++) {
             sb.append(EquipmentRepository.getMuscleNameCn(muscles.get(i)));
             if (i < muscles.size() - 1) sb.append("、");
@@ -75,9 +75,11 @@ public class EquipmentListAdapter extends RecyclerView.Adapter<EquipmentListAdap
             holder.tvCoverPlaceholder.setText(equipment.getName() + "\n封面待补充");
         }
 
-        holder.itemView.setOnClickListener(v -> {
+        View.OnClickListener openDetails = v -> {
             if (listener != null) listener.onEquipmentClick(equipment);
-        });
+        };
+        holder.itemView.setOnClickListener(openDetails);
+        holder.tvDetailAction.setOnClickListener(openDetails);
     }
 
     @Override
@@ -85,20 +87,21 @@ public class EquipmentListAdapter extends RecyclerView.Adapter<EquipmentListAdap
         return equipmentList.size();
     }
 
-    private GradientDrawable createDifficultyBackground(String difficulty) {
-        GradientDrawable bg = new GradientDrawable();
-        bg.setCornerRadius(999);
-        bg.setColor(getDifficultyColor(difficulty));
-        return bg;
+    private String buildMetaText(Equipment equipment) {
+        List<String> muscles = equipment.getTargetMuscles();
+        if (muscles != null && !muscles.isEmpty()) {
+            return EquipmentRepository.getMuscleNameCn(muscles.get(0)) + " · 力量器械";
+        }
+        return "器械训练";
     }
 
-    private int getDifficultyColor(String difficulty) {
-        if (difficulty == null) return 0xFF6B7280;
+    private int getDifficultyBackgroundRes(String difficulty) {
+        if (difficulty == null) return R.drawable.difficulty_badge_background;
         switch (difficulty) {
-            case "初级": return 0xFF16A34A;
-            case "中级": return 0xFFF97316;
-            case "高级": return 0xFFDC2626;
-            default: return 0xFF6B7280;
+            case "初级": return R.drawable.bg_badge_beginner;
+            case "中级": return R.drawable.bg_badge_intermediate;
+            case "高级": return R.drawable.bg_badge_advanced;
+            default: return R.drawable.difficulty_badge_background;
         }
     }
 
@@ -106,18 +109,22 @@ public class EquipmentListAdapter extends RecyclerView.Adapter<EquipmentListAdap
         ImageView ivCover;
         TextView tvCoverPlaceholder;
         TextView tvName;
+        TextView tvMeta;
         TextView tvDesc;
         TextView tvDifficulty;
         TextView tvMuscles;
+        TextView tvDetailAction;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivCover = itemView.findViewById(R.id.ivCover);
             tvCoverPlaceholder = itemView.findViewById(R.id.tvCoverPlaceholder);
             tvName = itemView.findViewById(R.id.tvName);
+            tvMeta = itemView.findViewById(R.id.tvMeta);
             tvDesc = itemView.findViewById(R.id.tvDesc);
             tvDifficulty = itemView.findViewById(R.id.tvDifficulty);
             tvMuscles = itemView.findViewById(R.id.tvMuscles);
+            tvDetailAction = itemView.findViewById(R.id.tvDetailAction);
         }
     }
 }

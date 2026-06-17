@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="0dp"
+    android:layout_height="118dp"
+    android:layout_weight="1"
+    android:background="@drawable/bg_checkin_metric_card"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_checkin_weight"
+            android:tint="#10C7B5" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:text="重量 kg"
+            android:textColor="#6B7280"
+            android:textSize="13sp" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSheetWeight"
+            android:layout_width="52dp"
+            android:layout_height="36dp"
+            android:background="@android:color/transparent"
+            android:gravity="end|center_vertical"
+            android:hint="0"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal"
+            android:padding="0dp"
+            android:singleLine="true"
+            android:textColor="#111827"
+            android:textColorHint="#9CA3AF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="14dp"
+        android:clipToPadding="false"
+        android:fadingEdgeLength="16dp"
+        android:requiresFadingEdge="horizontal"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:chipSpacingHorizontal="6dp"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight10"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="10"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight15"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="15"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight20"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="20"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight25"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="25"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight30"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="30"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight40"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="40"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWeight50"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minHeight="32dp"
+                android:text="50"
+                android:textColor="@color/checkin_chip_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:checkedIconVisible="false"
+                app:chipBackgroundColor="@color/checkin_chip_bg"
+                app:chipCornerRadius="16dp"
+                app:chipEndPadding="13dp"
+                app:chipMinHeight="32dp"
+                app:chipStartPadding="13dp"
+                app:chipStrokeColor="@color/checkin_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:ensureMinTouchTargetSize="false" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+</LinearLayout>

@@ -72,12 +72,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startScanWaveAnimation() {
-        animateWave(findViewById(R.id.scanWaveDark), "translationX", 0f, 12f, 4200L);
-        animateWave(findViewById(R.id.scanWaveDark), "alpha", 0.72f, 1f, 4200L);
-        animateWave(findViewById(R.id.scanWaveMid), "translationY", 0f, -10f, 5200L);
-        animateWave(findViewById(R.id.scanWaveMid), "scaleX", 1f, 1.08f, 5200L);
-        animateWave(findViewById(R.id.scanWaveLight), "translationX", 0f, -14f, 6200L);
-        animateWave(findViewById(R.id.scanWaveLight), "scaleY", 1f, 1.1f, 6200L);
+        animateWave(findViewById(R.id.scanWaveDark), "alpha", 0.18f, 0.34f, 4200L);
+        animateWave(findViewById(R.id.scanWaveMid), "alpha", 0.12f, 0.26f, 5200L);
+        animateWave(findViewById(R.id.scanWaveLight), "alpha", 0.14f, 0.28f, 6200L);
     }
 
     private void animateWave(View view, String property, float start, float end, long duration) {

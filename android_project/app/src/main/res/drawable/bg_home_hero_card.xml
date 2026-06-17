@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap
+            android:gravity="fill"
+            android:src="@drawable/gymeye_gym_hero" />
+    </item>
+    <item>
+        <shape>
+            <gradient
+                android:angle="0"
+                android:centerColor="#DC101820"
+                android:endColor="#90101418"
+                android:startColor="#F7101418" />
+        </shape>
+    </item>
+</layer-list>

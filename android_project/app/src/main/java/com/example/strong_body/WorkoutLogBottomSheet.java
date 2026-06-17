@@ -2,12 +2,15 @@ package com.example.strong_body;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,6 +53,9 @@ public class WorkoutLogBottomSheet extends BottomSheetDialogFragment {
         TextInputEditText etDur = v.findViewById(R.id.etSheetDuration);
         ChipGroup chipFeeling = v.findViewById(R.id.rgSheetFeeling);
         MaterialButton btnSubmit = v.findViewById(R.id.btnSheetSubmit);
+        TextView tvCurrentExercise = v.findViewById(R.id.tvSheetCurrentExercise);
+        TextView tvCurrentPart = v.findViewById(R.id.tvSheetCurrentPart);
+        TextView tvSuggestion = v.findViewById(R.id.tvSheetSuggestion);
 
         bindSuggestionDropdowns(v, acEx, acPart);
         bindQuickSelectChips(v, etSets, etReps, etWeight, etDur);
@@ -57,6 +63,24 @@ public class WorkoutLogBottomSheet extends BottomSheetDialogFragment {
         if (!TextUtils.isEmpty(defaultExerciseName)) {
             acEx.setText(defaultExerciseName);
         }
+        updateSummary(acEx, acPart, tvCurrentExercise, tvCurrentPart, tvSuggestion);
+
+        TextWatcher summaryWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSummary(acEx, acPart, tvCurrentExercise, tvCurrentPart, tvSuggestion);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
+        acEx.addTextChangedListener(summaryWatcher);
+        acPart.addTextChangedListener(summaryWatcher);
 
         btnSubmit.setOnClickListener(x -> submit(btnSubmit, acEx, acPart, etSets, etReps, etWeight, etDur, chipFeeling));
         return v;
@@ -114,10 +138,53 @@ public class WorkoutLogBottomSheet extends BottomSheetDialogFragment {
             chip.setOnClickListener(v -> {
                 target.setText(value);
                 target.setSelection(value.length());
-                // Deselect the chip after a short delay to reset its visual state
-                target.postDelayed(() -> chip.setChecked(false), 150);
+                chip.setChecked(true);
             });
         }
+    }
+
+    private void updateSummary(
+            MaterialAutoCompleteTextView acEx,
+            MaterialAutoCompleteTextView acPart,
+            TextView tvCurrentExercise,
+            TextView tvCurrentPart,
+            TextView tvSuggestion
+    ) {
+        String exercise = text(acEx);
+        String part = text(acPart);
+        String inferredPart = inferBodyPart(exercise);
+        if (TextUtils.isEmpty(part)) {
+            part = inferredPart;
+            if (!TextUtils.isEmpty(part)) {
+                acPart.setHint(part);
+            }
+        }
+
+        if (tvCurrentExercise != null) {
+            tvCurrentExercise.setText(TextUtils.isEmpty(exercise) ? "训练动作" : exercise);
+        }
+        if (tvCurrentPart != null) {
+            String subtitle = TextUtils.isEmpty(part) ? "固定器械" : part + " · 固定器械";
+            tvCurrentPart.setText(subtitle);
+        }
+        if (tvSuggestion != null) {
+            tvSuggestion.setText("建议：3 组 × 12 次");
+        }
+    }
+
+    private String inferBodyPart(String exercise) {
+        if (TextUtils.isEmpty(exercise)) return "";
+        Equipment equipment = EquipmentRepository.getEquipmentByName(exercise);
+        if (equipment != null && equipment.getTargetMuscles() != null && !equipment.getTargetMuscles().isEmpty()) {
+            return EquipmentRepository.getMuscleNameCn(equipment.getTargetMuscles().get(0));
+        }
+        String lower = exercise.toLowerCase();
+        if (exercise.contains("腿") || lower.contains("leg") || lower.contains("squat")) return "腿部";
+        if (exercise.contains("胸") || lower.contains("chest") || lower.contains("bench")) return "胸部";
+        if (exercise.contains("背") || exercise.contains("下拉") || exercise.contains("划船") || lower.contains("back") || lower.contains("row")) return "背部";
+        if (exercise.contains("肩") || lower.contains("shoulder")) return "肩部";
+        if (exercise.contains("弯举") || exercise.contains("下压") || lower.contains("curl") || lower.contains("triceps")) return "手臂";
+        return "";
     }
 
     private void submit(

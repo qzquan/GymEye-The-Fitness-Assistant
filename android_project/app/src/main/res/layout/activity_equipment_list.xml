@@ -3,18 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_equipment_page"
+    android:background="@drawable/bg_library_page"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="104dp"
-        android:background="@drawable/bg_gymeye_photo_hero"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_library_page"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="8dp"
-        android:paddingTop="36dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="20dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -23,151 +22,297 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="返回"
             android:padding="12dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#FFFFFFFF" />
+            android:src="@drawable/ic_library_arrow_back"
+            app:tint="#111827" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
             android:text="器械知识库"
-            android:textColor="#FFFFFFFF"
-            android:textSize="20sp"
+            android:textColor="#111827"
+            android:textSize="22sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingTop="14dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp">
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="12dp">
 
-        <EditText
-            android:id="@+id/etSearchEquipment"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_equipment_search"
-            android:hint="搜索器材、肌群或训练目标"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:singleLine="true"
-            android:textColor="#FF111827"
-            android:textColorHint="#FF9CA3AF"
-            android:textSize="14sp" />
+            android:layout_height="52dp"
+            android:background="@drawable/bg_library_search"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="14dp">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupDifficulty"
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_library_search"
+                app:tint="#6B7280" />
+
+            <EditText
+                android:id="@+id/etSearchEquipment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="搜索器材、肌群或训练目标"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="0dp"
+                android:singleLine="true"
+                android:textColor="#111827"
+                android:textColorHint="#9CA3AF"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="10dp"
+                app:selectionRequired="true"
+                app:singleLine="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:checked="true"
+                    android:minHeight="38dp"
+                    android:text="全部"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBeginner"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="初级"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIntermediate"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="中级"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAdvanced"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="高级"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAll"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupMuscle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="全部" />
+                app:chipSpacingHorizontal="10dp"
+                app:selectionRequired="true"
+                app:singleLine="true"
+                app:singleSelection="true">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipBeginner"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="初级" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleAll"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:checked="true"
+                    android:minHeight="38dp"
+                    android:text="全部部位"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipIntermediate"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="中级" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleBack"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="背部"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAdvanced"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="高级" />
-        </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleChest"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="胸部"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupMuscle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleShoulders"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="肩部"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleAll"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="全部部位" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleArms"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="手臂"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleBack"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="背部" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleChest"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="胸部" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleShoulders"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="肩部" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleArms"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="手臂" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMuscleLegs"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="腿部" />
-        </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMuscleLegs"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:minHeight="38dp"
+                    android:text="腿部"
+                    android:textColor="@color/chip_library_text"
+                    android:textSize="14sp"
+                    app:checkedIconVisible="false"
+                    app:chipBackgroundColor="@color/chip_library_bg"
+                    app:chipCornerRadius="18dp"
+                    app:chipMinHeight="38dp"
+                    app:chipStrokeColor="@color/chip_library_stroke"
+                    app:chipStrokeWidth="1dp"
+                    app:textEndPadding="16dp"
+                    app:textStartPadding="16dp" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvEmptyEquipment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="20dp"
         android:background="@drawable/bg_equipment_empty"
         android:gravity="center"
         android:padding="18dp"
-        android:text="没有匹配的器材"
-        android:textColor="#FF6B7280"
+        android:text="没有匹配的器械"
+        android:textColor="#6B7280"
         android:textSize="14sp"
         android:visibility="gone" />
 
@@ -176,9 +321,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@drawable/bg_library_page"
         android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="16dp" />
+        android:paddingStart="20dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp" />
 </LinearLayout>
